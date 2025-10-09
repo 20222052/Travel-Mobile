@@ -1,0 +1,68 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Info Order";
+}
+
+<!-- breadcrumb start-->
+<section class="breadcrumb breadcrumb_bg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb_iner">
+                    <div class="breadcrumb_iner_item text-center">
+                        <h2>order</h2>
+                        <p>home . order</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- breadcrumb start-->
+
+<div class="container my-5">
+    <h2 class="mb-4 text-center">Xác nhận đơn hàng</h2>
+
+    <h4>Thông tin sản phẩm</h4>
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Sản phẩm</th>
+                <th>Đơn giá</th>
+                <th>Số lượng</th>
+                <th>Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+              @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Tour?.Name</td>
+                            <td>@item.Tour?.Price</td>
+                            <td>@item.Quantity</td>
+                            <td>@(item.Quantity * item.Tour?.Price) VND</td>
+                        </tr>
+                    }
+        </tbody>
+    </table>
+
+    <h4 class="mt-4">Thông tin khách hàng</h4>
+    <form action="/Cart/OrderInfo" method="post">
+        <div class="mb-3">
+            <label class="form-label">Họ và tên</label>
+            <input type="text" class="form-control" name="name" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Số điện thoại</label>
+            <input type="text" class="form-control" name="phone" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Địa chỉ giao hàng</label>
+            <textarea class="form-control" name="address" rows="3" required></textarea>
+        </div>
+
+        <div class="text-end">
+            <button type="submit" class="btn btn-success">Đặt hàng</button>
+        </div>
+    </form>
+</div>

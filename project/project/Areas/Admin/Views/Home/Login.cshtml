@@ -1,0 +1,106 @@
+﻿@model project.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>AdminLTE | Dashboard</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.6 -->
+    <link rel="stylesheet" href="~/Admin/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="~/Admin/dist/css/AdminLTE.min.css">
+    <!-- AdminLTE Skins. Choose a skin from the css/skins
+         folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" href="~/Admin/dist/css/skins/_all-skins.min.css">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="~/Admin/plugins/iCheck/flat/blue.css">
+    <!-- Morris chart -->
+    <link rel="stylesheet" href="~/Admin/plugins/morris/morris.css">
+    <!-- jvectormap -->
+    <link rel="stylesheet" href="~/Admin/plugins/jvectormap/jquery-jvectormap-1.2.2.css">
+    <!-- Date Picker -->
+    <link rel="stylesheet" href="~/Admin/plugins/datepicker/datepicker3.css">
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="~/Admin/plugins/daterangepicker/daterangepicker-bs3.css">
+    <!-- bootstrap wysihtml5 - text editor -->
+    <link rel="stylesheet" href="~/Admin/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
+    <style>
+        .container {
+            width : 500px;
+            margin:auto;
+        }
+        .row {
+            margin-top: 180px;
+        }
+
+        .card-header {
+            padding: 10px 20px;
+            margin-bottom: 15px;
+        }
+
+        .card-header h4 {
+            font-weight: bold;
+        }
+
+        .box {
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+        }
+        
+        body {
+            background-color: whitesmoke;
+        }
+
+        .btn {
+            margin-top: 20px;
+            margin-left: 150px;
+        }
+    </style>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="box col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0" style="text-align: center;">
+                            ĐĂNG NHẬP
+                        </h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Login" method="post">
+                        <div class="form-group">
+                            <label asp-for="Username"></label>
+                            <input asp-for="Username" class="form-control" />
+                            <span asp-validation-for="Username" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Password"></label>
+                            <input asp-for="Password" class="form-control" type="password" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Đăng nhập</button>
+                    </form>
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="text-danger mt-3">@TempData["Error"]</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,65 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Tour Details";
+}
+<!--event_part start-->
+<section class="event_part section_padding" style="background-image: url('@Url.Content("~/Uploads/travel.png")');">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="single_event_slider">
+                    <div class="row justify-content-end">
+                        <div class="col-lg-6 col-md-6">
+                            <img src="~/Uploads/@Model.Image" alt="Alternate Text" style="height: 490px; width: 100%; object-fit: cover;" />
+                        </div>
+                        <div class="col-lg-6 col-md-6 ">
+                            <div class="event_slider_content " style="opacity: 0.9;">
+                                
+                                    <h5>
+                                        Tour information
+                                    </h5>
+                                    <h2>Maldeve - Asia</h2>
+                                    <p>Type: @Model.Category?.Type</p>
+                                    <p>Time: <span>@Model.Duration </span> </p>
+                                    <p>Cost: <span>Start from @Model.Price VND</span> </p>
+                                    <p>People: <span>@Model.People</span> </p>
+                                    <div class="rating">
+                                        <span>Rating:</span>
+                                        <div class="place_review">
+                                            <a href="#"><i class="fas fa-star"></i></a>
+                                            <a href="#"><i class="fas fa-star"></i></a>
+                                            <a href="#"><i class="fas fa-star"></i></a>
+                                            <a href="#"><i class="fas fa-star"></i></a>
+                                            <a href="#"><i class="fas fa-star"></i></a>
+                                        </div>
+                                    </div>
+                                <a href="/Cart/AddCart/@Model.Id" class="btn_1">Book</a>
+                                
+                            </>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--event_part end-->
+<!-- tour details content css start-->
+<section class="tour_details_content section_padding" style="
+         background-color: aliceblue;>
+    <div class="container" style="
+         background-color: white;">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="content_iner">
+                    @Html.Raw(Model.Description)
+                    <div class="tour_details_content_btn">
+                        <a href="#" class="btn_1">Book</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- tour details content css end-->

@@ -1,0 +1,77 @@
+﻿@model project.Models.User;
+@{
+    Layout = "_LayoutAuth";
+    ViewData["Title"] = "Đăng kí";
+}
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+<div class="d-flex justify-content-center align-items-center min-vh-100" >
+    <div class="bg-white p-4 rounded shadow" style="max-width: 480px; width: 100%;">
+        <h3 class="text-center mb-4 fw-bold text-secondary">Đăng ký tài khoản mới</h3>
+        <form asp-action="Register" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control" placeholder="Họ tên" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Image" class="form-label"></label>
+                <input asp-for="Image" class="form-control" type="file" accept="image/*" />
+                <span asp-validation-for="Image" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Giới tính</label>
+                <div>
+                    <input asp-for="Gender" type="radio" value="Male" id="genderMale" checked />
+                    <label for="genderMale" class="me-3">Nam</label>
+
+                    <input asp-for="Gender" type="radio" value="Female" id="genderFemale" />
+                    <label for="genderFemale" class="me-3">Nữ</label>
+
+                    <input asp-for="Gender" type="radio" value="Other" id="genderOther" />
+                    <label for="genderOther">Khác</label>
+                </div>
+                <span asp-validation-for="Gender" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Address" class="form-label"></label>
+                <input asp-for="Address" class="form-control" placeholder="Địa chỉ" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Phone" class="form-label"></label>
+                <input asp-for="Phone" class="form-control" placeholder="Số điện thoại" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" placeholder="Email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="DateOfBirth" class="form-label"></label>
+                <input asp-for="DateOfBirth" class="form-control" type="date" />
+                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Username" class="form-label"></label>
+                <input asp-for="Username" class="form-control" placeholder="Tên đăng nhập" />
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control" placeholder="Mật khẩu" type="password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 fw-semibold">Đăng kí</button>
+        </form>
+        <div class="text-center mt-3">
+            Bạn đã có tài khoản? <a asp-action="Login" asp-controller="Account">Đăng nhập ngay</a>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

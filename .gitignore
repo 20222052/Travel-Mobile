@@ -1,0 +1,38 @@
+@"
+# Visual Studio / .NET
+.vs/
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.cache
+*.VC.db
+*.dbmdl
+*.sqlite
+
+# IDE
+.vscode/
+.idea/
+
+# Flutter / Dart
+.dart_tool/
+.packages
+.pub-cache/
+.flutter-plugins
+.flutter-plugins-dependencies
+**/GeneratedPluginRegistrant.*
+**/generated_plugin_registrant.*
+build/
+
+# Android / Gradle
+androi_app/.gradle/
+androi_app/.idea/
+androi_app/build/
+android/.gradle/
+android/build/
+
+# OS & logs
+Thumbs.db
+.DS_Store
+*.log
+"@ | Out-File -FilePath .gitignore -Encoding utf8 -Append

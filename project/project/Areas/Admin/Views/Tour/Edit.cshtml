@@ -1,0 +1,98 @@
+﻿@model project.Models.Tour
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Tours";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white" >
+                    <h3 class="mb-0 px-3" style="padding: 5px 15px;">THAY ĐỔI THÔNG TIN </h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="Image" />
+
+                        <div class="form-group px-3" style="padding:0 15px;">
+                            <label>Ảnh</label><br/>
+                            @if (!string.IsNullOrEmpty(Model.Image))
+                            {
+                                <img src="~/Uploads/@Model.Image" alt="Avatar" width="100" class="mb-2 rounded" />
+                            }
+                            else
+                            {
+                                <p><i>Không có ảnh</i></p>
+                            }
+                            <input asp-for="ImageFile" class="form-control" type="file" />
+                            <span asp-validation-for="ImageFile" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-row px-3">
+                            <div class="form-group col-md-6">
+                                <label asp-for="Name">Tên</label>
+                                <input asp-for="Name" class="form-control" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label asp-for="CategoryId">Thể loại</label>
+                                <select asp-for="CategoryId" class="form-control">
+                                    <option value="">-- Chọn --</option>
+                                    @foreach (var item in ViewBag.Category)
+                                    {
+                                        <option value="@item.Id" selected="@(Model.CategoryId == item.Id ? "selected" : null)">@item.Type</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="CategoryId" class="text-danger"></span>
+
+                            </div>
+                        </div>
+                        <div class="form-group px-3" style="padding:0 15px;">
+                            <label asp-for="Location">Địa chỉ</label>
+                            <input asp-for="Location" class="form-control" />
+                            <span asp-validation-for="Location" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group px-3" style="padding:0 15px;">
+                            <label asp-for="Duration">Thời gian</label>
+                            <input asp-for="Duration" class="form-control" />
+                            <span asp-validation-for="Duration" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-row px-3">
+                            <div class="form-group col-md-6">
+                                <label asp-for="Price">Giá</label>
+                                <input asp-for="Price" class="form-control" />
+                                <span asp-validation-for="Price" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label asp-for="People">Số người</label>
+                                <input asp-for="People" class="form-control" />
+                                <span asp-validation-for="People" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Description"></label>
+                            <textarea asp-for="Description" id="Description" class="form-control"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-end px-3">
+                            <button type="submit" class="btn btn-success mr-2"><i class="fa fa-save"></i> Lưu</button>
+                            <a asp-action="Index" class="btn btn-secondary"><i class="fa fa-times"></i> Huỷ</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

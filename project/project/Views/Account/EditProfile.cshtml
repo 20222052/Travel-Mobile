@@ -1,0 +1,86 @@
+﻿@model project.Models.User
+@{
+    ViewData["Title"] = "Chỉnh sửa thông tin cá nhân";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-center text-primary">Chỉnh sửa thông tin cá nhân</h2>
+
+    <form asp-action="EditProfile" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label asp-for="Name" class="form-label">Họ tên</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Username" class="form-label">Tài khoản</label>
+                <input asp-for="Username" class="form-control" readonly />
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Phone" class="form-label">Số điện thoại</label>
+                <input asp-for="Phone" class="form-control" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label asp-for="Gender" class="form-label">Giới tính</label>
+                <select asp-for="Gender" class="form-select">
+                    <option value="">-- Chọn --</option>
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                    <option value="Khác">Khác</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="DateOfBirth" class="form-label">Ngày sinh</label>
+                <input asp-for="DateOfBirth" class="form-control" type="date" />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Address" class="form-label">Địa chỉ</label>
+            <input asp-for="Address" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Image" />
+
+            <div class="form-group px-3" style="padding:0 15px;">
+                <label>Ảnh đại diện hiện tại</label><br />
+                @if (!string.IsNullOrEmpty(Model.Image))
+                {
+                    <img src="~/Uploads/@Model.Image" alt="Avatar" width="100" class="mb-2 rounded" />
+                }
+                else
+                {
+                    <p><i>Không có ảnh</i></p>
+                }
+                <input asp-for="ImageFile" class="form-control" type="file" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-success">Lưu thay đổi</button>
+        <a asp-action="Profile" class="btn btn-secondary ms-2">Hủy</a>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

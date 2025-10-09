@@ -1,0 +1,31 @@
+﻿@model project.Models.LoginViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Đăng nhập";
+}
+<div style="background-color:aliceblue; padding: 30px 0;">
+    <div class="d-flex justify-content-center align-items-center vh-80">
+        <div class="bg-white p-4 rounded shadow" style="width: 380px;">
+            <h3 class="text-center mb-4 fw-bold text-secondary">Đăng nhập</h3>
+            <form asp-action="Login" method="post">
+                <div class="mb-3">
+                    <label asp-for="Username" class="form-label"></label>
+                    <input asp-for="Username" class="form-control" placeholder="Tên đăng nhập" />
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" class="form-control" placeholder="Mật khẩu" type="password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 fw-semibold">Đăng nhập</button>
+            </form>
+            <div class="text-center mt-3">
+                Chưa có tài khoản? <a asp-action="Register">Đăng ký ngay</a>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

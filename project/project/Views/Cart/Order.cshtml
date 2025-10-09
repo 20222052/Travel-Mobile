@@ -1,0 +1,84 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Order";
+}
+
+<!-- breadcrumb start-->
+<section class="breadcrumb breadcrumb_bg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb_iner">
+                    <div class="breadcrumb_iner_item text-center">
+                        <h2>order</h2>
+                        <p>home . order</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- breadcrumb start-->
+
+<div class="container my-5">
+    <h2 class="mb-4 text-center">Chọn sản phẩm</h2>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>Giá</th>
+                        <th>Số lượng</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Tour?.Name</td>
+                            <td>@item.Tour?.Price</td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="number" name="quantity" class="form-control" id="quantity-@item.Id" value="@item.Quantity" min="0">
+                                    <button class="btn btn-primary" onclick="updateQuantity(@item.Id)">Cập nhật</button>
+                                </div>
+                            </td>
+                            <td class="total-price"> @(item.Quantity * item.Tour?.Price) VND</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-end">
+            <a href="/Cart/OrderInfo" class="btn btn-primary">Tiếp tục</a>
+        </div>
+</div>
+
+<script>
+    function updateTotal(input, price) {
+        const totalCell = input.parentElement.nextElementSibling;
+        const quantity = parseInt(input.value);
+        totalCell.textContent = (price * quantity).toLocaleString('vi-VN') + ' VND';
+    }
+     function updateQuantity(cartItemId) {
+        var quantity = $('#quantity-' + cartItemId).val();
+
+        $.ajax({
+            url: '/Cart/CartUpdate',  
+            type: 'POST',
+            data: {
+                id: cartItemId,
+                quantity: quantity
+            },
+            success: function (result) {
+                alert('Cập nhật thành công!');
+                location.reload();  // Reload lại trang 
+            },
+            error: function () {
+                alert('Có lỗi xảy ra.');
+            }
+        });
+    }
+</script>

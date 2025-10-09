@@ -1,0 +1,278 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<section class="banner_part">
+    <div class="container">
+        <div class="row align-items-center justify-content-center">
+            <div class="col-lg-10">
+                <div class="banner_text text-center">
+                    <div class="banner_text_iner">
+                        <h1> Saintmartine</h1>
+                        <p>Let’s start your journey with us, your dream will come true</p>
+                        <a href="#" class="btn_1">Discover Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="top_place section_padding">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-6">
+                <div class="section_tittle text-center">
+                    <h2>Top Places to visit</h2>
+                    <p>Waters make fish every without firmament saw had. Morning air subdue. Our. Air very one. Whales grass is fish whales winged.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            @foreach (var item in ViewBag.RandomTours)
+            {
+                <div class="col-lg-6 col-md-6">
+                    <div class="single_place">
+                        <img src="~/Uploads/@item.Image" alt="" width="550px" height="400px" style="object-fit: cover;">
+                        <div class="hover_Text d-flex align-items-end justify-content-between">
+                            <div class="hover_text_iner">
+                                <a href="/Home/TourDetail/@item.Id" class="place_btn">travel</a>
+                                <h3>@item.Name</h3>
+                                <p>@item.Location</p>
+                                <div class="place_review">
+                                    <a href="#"><i class="fas fa-star"></i></a>
+                                    <a href="#"><i class="fas fa-star"></i></a>
+                                    <a href="#"><i class="fas fa-star"></i></a>
+                                    <a href="#"><i class="fas fa-star"></i></a>
+                                    <a href="#"><i class="fas fa-star"></i></a>
+                                    <span>(@item.View review)</span>
+                                </div>
+                            </div>
+                            <div class="details_icon text-right">
+                                <i class="ti-share"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <a href="/Home/Place" class="btn_1 text-cnter">Discover more</a>
+        </div>
+    </div>
+</section>
+<!--top place end-->
+<!--top place start-->
+<section class="event_part section_padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="event_slider owl-carousel">
+                    
+                     @foreach (var item in ViewBag.TopViewedTours)
+                     {
+                        <div class="single_event_slider">
+                            <div class="row justify-content-end">
+                                <div class="col-lg-6 col-md-6">
+                                    <img src="~/Uploads/@item.Image" alt="Alternate Text" style="height: 490px; width: 100%; object-fit: cover;" />
+                                </div>
+                                <div class="col-lg-6 col-md-6">
+                                    <div class="event_slider_content">
+                                        <h5>
+                                            Tour information
+                                        </h5>
+                                        <h2>Maldeve - Asia</h2>
+                                        <p>Type: @item.Category?.Type</p>
+                                        <p>Time: <span>@item.Duration </span> </p>
+                                        <p>Cost: <span>Start from @item.Price VND</span> </p>
+                                        <p>People: <span>@item.People</span> </p>
+                                        <div class="rating">
+                                            <span>Rating:</span>
+                                            <div class="place_review">
+                                                <a href="#"><i class="fas fa-star"></i></a>
+                                                <a href="#"><i class="fas fa-star"></i></a>
+                                                <a href="#"><i class="fas fa-star"></i></a>
+                                                <a href="#"><i class="fas fa-star"></i></a>
+                                                <a href="#"><i class="fas fa-star"></i></a>
+                                            </div>
+                                        </div>
+                                        <a href="/Cart/AddCart/@item.Id" class="btn_1">Book</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                     }
+                 
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--top place end-->
+<!--::industries start::-->
+<section class="hotel_list section_padding">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-6">
+                <div class="section_tittle text-center">
+                    <h2>Top Hotel & Restaurants</h2>
+                    <p>Waters make fish every without firmament saw had. Morning air subdue. Our. Air very one. Whales grass is fish whales winged.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            @foreach (var item in ViewBag.TourCate)
+            {
+                <div class="col-lg-4 col-sm-6">
+                    <div class="single_ihotel_list">
+                        <img src="~/Uploads/@item.Image" alt="" width="360px" height="260px" style="object-fit: cover;">
+                        <div class="hover_text">
+                            <div class="hotel_social_icon">
+                                <ul>
+                                    <li><a href="#"><i class="ti-facebook"></i></a></li>
+                                    <li><a href="#"><i class="ti-twitter-alt"></i></a></li>
+                                    <li><a href="#"><i class="ti-linkedin"></i></a></li>
+                                </ul>
+                            </div>
+                            <div class="share_icon">
+                                <i class="ti-share"></i>
+                            </div>
+                        </div>
+                        <div class="hotel_text_iner">
+                            <h3> <a href="/Home/TourDetail/@item.Id"> @item.Name</a></h3>
+                            <div class="place_review">
+                                <a href="#"><i class="fas fa-star"></i></a>
+                                <a href="#"><i class="fas fa-star"></i></a>
+                                <a href="#"><i class="fas fa-star"></i></a>
+                                <a href="#"><i class="fas fa-star"></i></a>
+                                <a href="#"><i class="fas fa-star"></i></a>
+                                <span>(@item.View review)</span>
+                            </div>
+                            <p>@item.Location </p>
+                            <h5>From <span>@item.Price</span></h5>
+                        </div>
+                    </div>
+                </div>
+            }
+            
+        </div>
+    </div>
+</section>
+<!--::industries end::-->
+<!--top place start-->
+<section class="client_review section_padding">
+    <div class="container">
+        <div class="row ">
+            <div class="col-xl-6">
+                <div class="section_tittle">
+                    <h2>What they said</h2>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="client_review_slider owl-carousel">
+                    <div class="single_review_slider">
+                        <div class="place_review">
+                            <a href="#"><i class="fas fa-star"></i></a>
+                            <a href="#"><i class="fas fa-star"></i></a>
+                            <a href="#"><i class="fas fa-star"></i></a>
+                            <a href="#"><i class="fas fa-star"></i></a>
+                            <a href="#"><i class="fas fa-star"></i></a>
+                        </div>
+                        <p>Waters make fish every without firmament saw had. Morning air subdue. Our Air very one whales grass is fish whales winged night yielding land creeping that seed </p>
+                        <h5> - Allen Miller</h5>
+                    </div>
+                    <div class="single_review_slider">
+                        <div class="place_review">
+                            <a href="#"><i class="fas fa-star"></i></a>
+                            <a href="#"><i class="fas fa-star"></i></a>
+                            <a href="#"><i class="fas fa-star"></i></a>
+                            <a href="#"><i class="fas fa-star"></i></a>
+                            <a href="#"><i class="fas fa-star"></i></a>
+                        </div>
+                        <p>Waters make fish every without firmament saw had. Morning air subdue. Our Air very one whales grass is fish whales winged night yielding land creeping that seed </p>
+                        <h5> - Allen Miller</h5>
+                    </div>
+                    <div class="single_review_slider">
+                        <div class="place_review">
+                            <a href="#"><i class="fas fa-star"></i></a>
+                            <a href="#"><i class="fas fa-star"></i></a>
+                            <a href="#"><i class="fas fa-star"></i></a>
+                            <a href="#"><i class="fas fa-star"></i></a>
+                            <a href="#"><i class="fas fa-star"></i></a>
+                        </div>
+                        <p>Waters make fish every without firmament saw had. Morning air subdue. Our Air very one whales grass is fish whales winged night yielding land creeping that seed </p>
+                        <h5> - Allen Miller</h5>
+                    </div>
+                    <div class="single_review_slider">
+                        <div class="place_review">
+                            <a href="#"><i class="fas fa-star"></i></a>
+                            <a href="#"><i class="fas fa-star"></i></a>
+                            <a href="#"><i class="fas fa-star"></i></a>
+                            <a href="#"><i class="fas fa-star"></i></a>
+                            <a href="#"><i class="fas fa-star"></i></a>
+                        </div>
+                        <p>Waters make fish every without firmament saw had. Morning air subdue. Our Air very one whales grass is fish whales winged night yielding land creeping that seed </p>
+                        <h5> - Allen Miller</h5>
+                    </div>
+                    <div class="single_review_slider">
+                        <div class="place_review">
+                            <a href="#"><i class="fas fa-star"></i></a>
+                            <a href="#"><i class="fas fa-star"></i></a>
+                            <a href="#"><i class="fas fa-star"></i></a>
+                            <a href="#"><i class="fas fa-star"></i></a>
+                            <a href="#"><i class="fas fa-star"></i></a>
+                        </div>
+                        <p>Waters make fish every without firmament saw had. Morning air subdue. Our Air very one whales grass is fish whales winged night yielding land creeping that seed </p>
+                        <h5> - Allen Miller</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--top place end-->
+<!--::industries start::-->
+<section class="best_services section_padding">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-6">
+                <div class="section_tittle text-center">
+                    <h2>We offered best services</h2>
+                    <p>Waters make fish every without firmament saw had. Morning air subdue. Our. Air very one. Whales grass is fish whales winged.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-sm-6">
+                <div class="single_ihotel_list">
+                    <img src="/img/services_1.png" alt="">
+                    <h3> <a href="#"> Transportation</a></h3>
+                    <p>All transportation cost we bear</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="single_ihotel_list">
+                    <img src="/img/services_2.png" alt="">
+                    <h3> <a href="#"> Guidence</a></h3>
+                    <p>We offer the best guidence for you</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="single_ihotel_list">
+                    <img src="/img/services_3.png" alt="">
+                    <h3> <a href="#"> Accomodation</a></h3>
+                    <p>Luxarious and comfortable</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="single_ihotel_list">
+                    <img src="/img/services_4.png" alt="">
+                    <h3> <a href="#"> Discover world</a></h3>
+                    <p>Best tour plan for your next tour</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--::industries end::-->

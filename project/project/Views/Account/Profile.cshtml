@@ -1,0 +1,40 @@
+﻿@model project.Models.User;
+@{
+    ViewData["Title"] = "Thông tin cá nhân";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<section class="breadcrumb breadcrumb_bg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb_iner">
+                    <div class="breadcrumb_iner_item text-center">
+                        <h2>profile</h2>
+                        <p>home . profile</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="container py-5" >
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body d-flex">
+                    <img src="~/uploads/@Model.Image" class="rounded-circle me-4" width="120" height="120" alt="Avatar" />
+                    <div>
+                        <h4 class="mb-3">@Model.Name</h4>
+                        <p><strong>Giới tính:</strong> @Model.Gender</p>
+                        <p><strong>Email:</strong> @Model.Email</p>
+                        <p><strong>Số điện thoại:</strong> @Model.Phone</p>
+                        <a class="btn btn-outline-primary mt-3" href="@Url.Action("EditProfile", "Account")">Chỉnh sửa</a>
+                        <a class="btn btn-outline-danger mt-3" href="@Url.Action("History", "Account")">Lịch sử</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

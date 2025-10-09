@@ -1,0 +1,67 @@
+﻿@model List<project.Models.Order>;
+@{
+    ViewData["Title"] = "Lịch sử đặt tour";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // hoặc "_LayoutUser"
+}
+
+
+<section class="breadcrumb breadcrumb_bg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb_iner">
+                    <div class="breadcrumb_iner_item text-center">
+                        <h2>history</h2>
+                        <p>home . history</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="container py-5" >
+    <h3 class="mb-4">Lịch sử đặt tour</h3>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">Bạn chưa đặt tour nào.</div>
+    }
+    else
+    {
+        <table class="table table-bordered table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th>STT</th>
+                    <th>Tên tour</th>
+                    <th>Ngày đặt</th>
+                    <th>Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int stt = 1;
+                }
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@stt</td>
+                        <td>@(item.Date.HasValue ? item.Date.Value.ToString("dd/MM/yyyy") : "")</td>
+                        <td>
+                            @{
+                                string statusText = item.Status switch
+                                {
+                                    0 => "Chờ xử lý",
+                                    1 => "Đã xác nhận",
+                                    2 => "Đã hủy",
+                                    _ => "Không xác định"
+                                };
+                            }
+                            <span>@statusText</span>
+                        </td>
+                    </tr>
+                    stt++;
+                }
+            </tbody>
+        </table>
+    }
+</div>

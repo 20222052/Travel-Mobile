@@ -1,0 +1,86 @@
+﻿
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Blogs";
+    int currentPage = (int)ViewData["CurrentPage"];
+    int totalPages = (int)ViewData["TotalPages"];
+    string search = ViewData["CurrentFilter"] as string;
+}
+<form asp-action="Index" method="get" class="form-inline mb-3">
+    <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control mr-2" placeholder="Nhập thông tin tìm kiếm..." />
+    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+</form>
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <a asp-action="Create" class="btn btn-success btn-sm"><i class="fa fa-plus"></i> Thêm mới</a>
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0" style="padding: 15px;">DANH SÁCH BÀI VIẾT</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Tiêu đề</th>
+                                    <th>Ảnh</th>
+                                    <th>Nội dung</th>
+                                    <th>Ngày đăng</th>
+                                    <th>Danh mục</th>
+                                    <th>Lượt xem</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@item.Id</td>
+                                        <td><a href="#">@item.Title</a></td>
+                                        <td><img src="~/Uploads/@item.Image" width="50px" /></td>
+                                        <td>@item.Content</td>
+                                        <td>@item.PostedDate.ToString("dd/MM/yyyy")</td>
+                                        <td>@item.Category?.Type</td>
+                                        <td>@item.View</td>
+                                        <td>
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>
+                                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline">
+                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc muốn xoá?');">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="dataTables_paginate paging_simple_numbers">
+                <ul class="pagination">
+                    <li class="paginate_button previous @(currentPage == 1 ? "disabled" : "")">
+                        <a href="@Url.Action("Index", new { page = (currentPage == 1 ? 1 : currentPage - 1), searchString = search })">Previous</a>
+                    </li>
+                    @for (int i = 1; i <= totalPages; i++)
+                    {
+                        <li class="paginate_button @(i == currentPage ? "active" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { page = i, searchString = search })">@i</a>
+                        </li>
+                    }
+                    <li class="paginate_button next @(currentPage >= totalPages ? "disabled" : "")">
+                        <a href="@Url.Action("Index", new { page = (currentPage >= totalPages ? totalPages : currentPage + 1), searchString = search })">Next</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

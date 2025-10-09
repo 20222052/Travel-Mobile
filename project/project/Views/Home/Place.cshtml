@@ -1,0 +1,180 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Place";
+    int currentPage = (int)ViewData["CurrentPage"];
+    int totalPages = (int)ViewData["TotalPages"];
+    string search = ViewData["CurrentFilter"] as string;
+    int cateId = ViewData["CurrentCategory"] != null ? (int)ViewData["CurrentCategory"] : 0;
+}
+
+
+<!-- breadcrumb start-->
+<section class="breadcrumb breadcrumb_bg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb_iner">
+                    <div class="breadcrumb_iner_item text-center">
+                        <h2>place</h2>
+                        <p>home .place</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- breadcrumb start-->
+
+<div class="col-lg-12" style="margin: 15px 0;">
+    <div class="container" style="border-bottom: 1px solid #0c3e72;padding: 20px;">
+        <div class="booking_content">
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="hotel" role="tabpanel" aria-labelledby="hotel-tab">
+                    <div class="booking_form">
+                        <form action="Place" method="get">
+                            <div class="form-row">
+                                <div class="form_colum">
+                                    <select name="cateId" class="form-control">
+                                        <option value="0">-- Tất cả thể loại --</option>
+                                        @foreach (var item in ViewBag.category)
+                                        {
+                                            <option value="@item.Id" selected="@(item.Id == cateId ? "selected" : null)">
+                                                @item.Type
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form_colum" style="margin: 0 15px;margin-left: 470px;width: 30%;">
+                                    <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control mr-2" placeholder="Nhập thông tin tìm kiếm..." />
+                                </div>
+                                <div class="form_btn">
+                                    <button href="#" class="btn_1" style="padding: 7px 30px;border: none;">search</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="tricket" role="tabpanel" aria-labelledby="tricket-tab">
+                    <div class="booking_form">
+                        <form action="#">
+                            <div class="form-row">
+                                <div class="form_colum">
+                                    <select class="nc_select">
+                                        <option selected>Choosace place </option>
+                                        <option value="1">One</option>
+                                        <option value="2">Two</option>
+                                        <option value="3">Three</option>
+                                    </select>
+                                </div>
+                                <div class="form_colum">
+                                    <input id="datepicker_3" placeholder="Check in date">
+                                </div>
+                                <div class="form_colum">
+                                    <input id="datepicker_4" placeholder="Check in date">
+                                </div>
+                                <div class="form_colum">
+                                    <select class="nc_select">
+                                        <option selected>Persone </option>
+                                        <option value="1">One</option>
+                                        <option value="2">Two</option>
+                                        <option value="3">Three</option>
+                                    </select>
+                                </div>
+                                <div class="form_btn">
+                                    <a href="#" class="btn_1">search</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="place" role="tabpanel" aria-labelledby="place-tab">
+                    <div class="booking_form">
+                        <form action="#">
+                            <div class="form-row">
+                                <div class="form_colum">
+                                    <select class="nc_select">
+                                        <option selected>Persone </option>
+                                        <option value="1">One</option>
+                                        <option value="2">Two</option>
+                                        <option value="3">Three</option>
+                                    </select>
+                                </div>
+                                <div class="form_colum">
+                                    <input id="datepicker_6" placeholder="Check in date" type="text">
+                                </div>
+                                <div class="form_btn">
+                                    <a href="#" class="btn_1">search</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- about us css start-->
+<section class="hotel_list section_padding single_page_hotel_list" style="padding: 20px 20px 0 20px;">
+    <div class="container">
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-lg-4 col-sm-6" style="margin-top:10px;">
+                    <div class="single_ihotel_list" style="background-color: #cddef1; padding: 20px;">
+                        <img src="~/Uploads/@item.Image" alt="" width="360px" height="260px">
+                        <div class="hover_text">
+                            <div class="hotel_social_icon">
+                                <ul>
+                                    <li><a href="#"><i class="ti-facebook"></i></a></li>
+                                    <li><a href="#"><i class="ti-twitter-alt"></i></a></li>
+                                    <li><a href="#"><i class="ti-linkedin"></i></a></li>
+                                </ul>
+                            </div>
+                            <div class="share_icon">
+                                <i class="ti-share"></i>
+                            </div>
+                        </div>
+                        <div class="hotel_text_iner">
+                            <h3> <a href="/Home/TourDetail/@item.Id"> @item.Name</a></h3>
+                            <div class="place_review">
+                                <a href="#"><i class="fas fa-star"></i></a>
+                                <a href="#"><i class="fas fa-star"></i></a>
+                                <a href="#"><i class="fas fa-star"></i></a>
+                                <a href="#"><i class="fas fa-star"></i></a>
+                                <a href="#"><i class="fas fa-star"></i></a>
+                                <span>(@item.View review)</span>
+                            </div>
+                            <p>@item.Location</p>
+                            <p>People: @item.People </p>
+                            <p>Duration: @item.Duration</p>
+                            <h5>From <span>$@item.Price</span> <a href="/Cart/AddCart/@item.Id" class="btn_1" style="padding:5px; margin-left:20px;">ADD</a></h5>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+            <nav class="blog-pagination justify-content-center d-flex">
+                <ul class="pagination">
+                    <li class="page-item">
+                <a href="@Url.Action("Place", new { page =(currentPage == 1 ? 1: currentPage - 1), searchString = search })" class="page-link" aria-label="Previous">
+                            <i class="ti-angle-left"></i>
+                        </a>
+                    </li>
+                    @for (int i = 1; i <= totalPages; i++)
+                    {
+                        <li class="page-item @(i == currentPage ? "active" : "")">
+                    <a href="@Url.Action("Place", new { page = i, searchString = search })" class="page-link">@i</a>
+                        </li>
+                    }
+                   
+                    <li class="page-item">
+                        <a href="@Url.Action("Place", new { page = (currentPage >= totalPages ? totalPages:currentPage + 1), searchString = search })" class="page-link" aria-label="Next">
+                            <i class="ti-angle-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+</section>
+<!-- about us css end-->
