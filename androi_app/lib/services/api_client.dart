@@ -2,6 +2,7 @@
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
+import '../config/api_config.dart';
 
 class ApiClient {
   ApiClient._internal() {
@@ -9,11 +10,8 @@ class ApiClient {
   }
   static final ApiClient instance = ApiClient._internal();
 
-  // static const String base = 'https://10.0.2.2:44364';
-  // static const String base = 'https://10.0.2.2:5014';
-  
-  // SỬA: Dùng HTTP thay vì HTTPS để tránh lỗi SSL HandshakeException
-  static const String base = 'http://10.0.2.2:5014';
+  // Sử dụng ApiConfig để dễ dàng thay đổi giữa Emulator và điện thoại thật
+  static String get base => ApiConfig.baseUrl;
 
   /// DEV: chấp nhận chứng chỉ tự ký (không cần thiết khi dùng HTTP)
   static const bool allowBadCert = true;

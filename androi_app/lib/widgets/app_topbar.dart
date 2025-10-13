@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config/api_config.dart';
 
 class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   final TextEditingController searchCtrl;
@@ -23,7 +24,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size.fromHeight(64);
 
-  static const String _logoUrl = 'https://10.0.2.2:44364/img/logo.png';
+  static String get _logoUrl => '${ApiConfig.baseUrl}/img/logo.png';
 
   @override
   Widget build(BuildContext context) {

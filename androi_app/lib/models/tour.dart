@@ -7,6 +7,7 @@ class Tour {
   final int? categoryId;
   final DateTime? createdDate;
   final int? view;
+  final String? description; // Thêm field mô tả chi tiết
 
   Tour({
     this.id,
@@ -17,6 +18,7 @@ class Tour {
     this.categoryId,
     this.createdDate,
     this.view,
+    this.description, // Thêm vào constructor
   });
 
   factory Tour.fromJson(Map<String, dynamic> json) {
@@ -33,6 +35,7 @@ class Tour {
           ? DateTime.tryParse(json['createdDate'].toString())
           : null,
       view: json['view'] as int?,
+      description: json['description'] as String?, // Thêm parse description
     );
   }
 
@@ -45,5 +48,6 @@ class Tour {
     'categoryId': categoryId,
     'createdDate': createdDate?.toIso8601String(),
     'view': view,
+    'description': description, // Thêm vào JSON serialization
   };
 }

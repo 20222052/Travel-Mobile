@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../config/api_config.dart';
 import '../services/cart_service.dart';
 import '../services/tour_service.dart';
 import '../models/tour.dart';
@@ -8,6 +9,7 @@ import '../widgets/app_topbar.dart';
 import '../widgets/category_strip.dart';
 import '../widgets/button_nav.dart';
 import '../widgets/tour_card.dart';
+import '../widgets/debug_network_fab.dart';
 
 import '../state/session.dart';
 import '../models/user.dart';
@@ -48,9 +50,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // ---- TOUR reload
   void _reloadTours({String? query, int? categoryId, String? sort}) {
-    _currentQuery  = (query ?? _currentQuery)?.trim();
-    _selectedCatId = categoryId ?? _selectedCatId;
-    _sort          = (sort ?? _sort);
+    _currentQuery = (query ?? _currentQuery)?.trim();
+    _selectedCatId = categoryId; // Luôn cập nhật categoryId, kể cả khi là null
+    _sort = (sort ?? _sort);
     final fut = TourService.getTours(
       name: (_currentQuery?.isEmpty ?? true) ? null : _currentQuery,
       categoryId: _selectedCatId,
@@ -146,6 +148,8 @@ class _HomeScreenState extends State<HomeScreen> {
           setState(() => _tabIndex = i);
         },
       ),
+      // Debug button - chỉ hiển thị trong debug mode
+      floatingActionButton: const DebugNetworkFAB(),
     );
   }
 
@@ -185,6 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
             slivers: [
               SliverToBoxAdapter(
                 child: CategoryStrip(
+                  selectedKey: _mapCategoryIdToKey(_selectedCatId),
                   onTap: (key) {
                     final id = _mapCategoryKeyToId(key);
                     _reloadTours(categoryId: id);
@@ -206,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       crossAxisCount: 2,
                       mainAxisSpacing: 12,
                       crossAxisSpacing: 12,
-                      childAspectRatio: 0.78,
+                      childAspectRatio: 0.72, // Tính toán: width/height ≈ 158/220 = 0.72 (card height cố định 220)
                     ),
                     itemCount: tours.length,
                     itemBuilder: (context, i) {
@@ -269,11 +274,12 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.all(16),
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 CircleAvatar(
                   radius: 28,
                   backgroundImage: (me.image?.isNotEmpty == true)
-                      ? NetworkImage('https://10.0.2.2:5014/Uploads/${me.image}')
+                      ? NetworkImage('${ApiConfig.uploadsPath}/${me.image}')
                       : null,
                   child: (me.image?.isNotEmpty == true)
                       ? null
@@ -283,10 +289,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(me.name ?? me.username ?? '',
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                      if (me.email != null) Text(me.email!, style: const TextStyle(color: Colors.black54)),
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis),
+                      if (me.email != null) 
+                        Text(me.email!, 
+                          style: const TextStyle(color: Colors.black54, fontSize: 13),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis),
                     ],
                   ),
                 ),
@@ -328,13 +341,25 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  int? _mapCategoryKeyToId(String key) {
+  int? _mapCategoryKeyToId(String? key) {
+    if (key == null) return null;
     switch (key) {
       case 'adventure': return 1;
       case 'relax':     return 2;
       case 'culture':   return 3;
       case 'food':      return 5;
       default:          return null;
+    }
+  }
+
+  String? _mapCategoryIdToKey(int? id) {
+    if (id == null) return null;
+    switch (id) {
+      case 1: return 'adventure';
+      case 2: return 'relax';
+      case 3: return 'culture';
+      case 5: return 'food';
+      default: return null;
     }
   }
 }

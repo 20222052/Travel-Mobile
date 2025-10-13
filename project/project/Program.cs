@@ -21,6 +21,9 @@ builder.Services.AddTransient<IEmailService, EmailService>();
 // 🔹 Đăng ký OtpService
 builder.Services.AddTransient<IOtpService, OtpService>();
 
+// 🔹 Đăng ký OrderEmailService
+builder.Services.AddTransient<IOrderEmailService, OrderEmailService>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>

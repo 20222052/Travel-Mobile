@@ -155,22 +155,48 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               TextFormField(
                 controller: _uCtrl,
-                decoration: const InputDecoration(labelText: 'Tên đăng nhập', prefixIcon: Icon(Icons.person_outline)),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Nhập tên đăng nhập' : null,
+                decoration: const InputDecoration(
+                  labelText: 'Tên đăng nhập',
+                  prefixIcon: Icon(Icons.person_outline),
+                  hintText: 'Nhập username của bạn',
+                  border: OutlineInputBorder(),
+                ),
+                textInputAction: TextInputAction.next,
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) {
+                    return 'Vui lòng nhập tên đăng nhập';
+                  }
+                  if (v.trim().length < 3) {
+                    return 'Tên đăng nhập phải có ít nhất 3 ký tự';
+                  }
+                  return null;
+                },
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _pCtrl,
                 obscureText: _obscure,
                 decoration: InputDecoration(
                   labelText: 'Mật khẩu',
                   prefixIcon: const Icon(Icons.lock_outline),
+                  hintText: 'Nhập mật khẩu của bạn',
+                  border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
-                    icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off),
+                    icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility),
                     onPressed: () => setState(() => _obscure = !_obscure),
                   ),
                 ),
-                validator: (v) => (v == null || v.isEmpty) ? 'Nhập mật khẩu' : null,
+                textInputAction: TextInputAction.done,
+                onFieldSubmitted: (_) => _submit(),
+                validator: (v) {
+                  if (v == null || v.isEmpty) {
+                    return 'Vui lòng nhập mật khẩu';
+                  }
+                  if (v.length < 6) {
+                    return 'Mật khẩu phải có ít nhất 6 ký tự';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 20),
               SizedBox(

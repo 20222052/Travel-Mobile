@@ -6,9 +6,59 @@
     int totalPages = (int)ViewData["TotalPages"];
     string search = ViewData["CurrentFilter"] as string;
 }
+
+<style>
+    /* Compact button styling for order actions */
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        margin: 1px;
+    }
+    
+    /* Make status badges more prominent */
+    .badge {
+        padding: 0.35em 0.65em;
+        font-size: 0.9em;
+    }
+    
+    /* Ensure action column doesn't wrap awkwardly */
+    td form {
+        margin: 0;
+    }
+</style>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fa fa-check-circle"></i> @TempData["SuccessMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fa fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
 <form asp-action="Index" method="get" class="form-inline mb-3">
-    <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control mr-2" placeholder="Nhập thông tin tìm kiếm..." />
-    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+    <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control mr-2" placeholder="Tìm theo tên..." style="width: 200px;" />
+    <select name="statusFilter" class="form-control mr-2" style="width: 150px;">
+        <option value="">Tất cả trạng thái</option>
+        <option value="0" selected="@(ViewData["StatusFilter"]?.ToString() == "0")">Chờ xác nhận</option>
+        <option value="1" selected="@(ViewData["StatusFilter"]?.ToString() == "1")">Đã xác nhận</option>
+        <option value="2" selected="@(ViewData["StatusFilter"]?.ToString() == "2")">Đang giao</option>
+        <option value="3" selected="@(ViewData["StatusFilter"]?.ToString() == "3")">Đã giao</option>
+        <option value="4" selected="@(ViewData["StatusFilter"]?.ToString() == "4")">Đã hủy</option>
+    </select>
+    <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Tìm kiếm</button>
+    <a asp-action="Index" class="btn btn-secondary ml-2"><i class="fa fa-refresh"></i> Reset</a>
 </form>
 <div class="container-fluid mt-4" style="margin-top:15px;">
     <div class="row">
@@ -44,12 +94,77 @@
                                         <td>@item.Name</td>
                                         <td>@item.Address</td>
                                         <td>@item.Gender</td>
-                                        <td>@(item.Status == 0 ? "Chờ duyệt" : "Đã duyệt")</td>
-                                        <td>@item.Date.ToString("dd/MM/yyyy")</td>
                                         <td>
-                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>
+                                            <span class="badge @item.GetStatusBadgeClass()">@item.GetStatusText()</span>
+                                        </td>
+                                        <td>@item.Date?.ToString("dd/MM/yyyy")</td>
+                                        <td style="white-space: nowrap;">
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm" title="Chỉnh sửa">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                            
+                                            @* Buttons based on current status *@
+                                            @if (item.Status == 0) @* Chờ xác nhận *@
+                                            {
+                                                <form asp-action="UpdateStatus" asp-route-id="@item.Id" method="post" style="display:inline">
+                                                    <input type="hidden" name="status" value="1" />
+                                                    <button type="submit" class="btn btn-info btn-sm" title="Xác nhận đơn hàng" onclick="return confirm('Xác nhận đơn hàng này?');">
+                                                        <i class="fa fa-check"></i> Xác nhận
+                                                    </button>
+                                                </form>
+                                                <form asp-action="UpdateStatus" asp-route-id="@item.Id" method="post" style="display:inline">
+                                                    <input type="hidden" name="status" value="4" />
+                                                    <button type="submit" class="btn btn-danger btn-sm" title="Hủy đơn hàng" onclick="return confirm('Hủy đơn hàng này?');">
+                                                        <i class="fa fa-times"></i> Hủy
+                                                    </button>
+                                                </form>
+                                            }
+                                            else if (item.Status == 1) @* Đã xác nhận *@
+                                            {
+                                                <form asp-action="UpdateStatus" asp-route-id="@item.Id" method="post" style="display:inline">
+                                                    <input type="hidden" name="status" value="2" />
+                                                    <button type="submit" class="btn btn-primary btn-sm" title="Chuyển sang đang giao" onclick="return confirm('Chuyển đơn hàng sang trạng thái đang giao?');">
+                                                        <i class="fa fa-truck"></i> Giao hàng
+                                                    </button>
+                                                </form>
+                                                <form asp-action="UpdateStatus" asp-route-id="@item.Id" method="post" style="display:inline">
+                                                    <input type="hidden" name="status" value="4" />
+                                                    <button type="submit" class="btn btn-danger btn-sm" title="Hủy đơn hàng" onclick="return confirm('Hủy đơn hàng này?');">
+                                                        <i class="fa fa-times"></i> Hủy
+                                                    </button>
+                                                </form>
+                                            }
+                                            else if (item.Status == 2) @* Đang giao *@
+                                            {
+                                                <form asp-action="UpdateStatus" asp-route-id="@item.Id" method="post" style="display:inline">
+                                                    <input type="hidden" name="status" value="3" />
+                                                    <button type="submit" class="btn btn-success btn-sm" title="Hoàn thành đơn hàng" onclick="return confirm('Xác nhận đơn hàng đã giao thành công?');">
+                                                        <i class="fa fa-check-circle"></i> Đã giao
+                                                    </button>
+                                                </form>
+                                                <form asp-action="UpdateStatus" asp-route-id="@item.Id" method="post" style="display:inline">
+                                                    <input type="hidden" name="status" value="1" />
+                                                    <button type="submit" class="btn btn-secondary btn-sm" title="Quay lại đã xác nhận" onclick="return confirm('Chuyển về trạng thái đã xác nhận?');">
+                                                        <i class="fa fa-undo"></i>
+                                                    </button>
+                                                </form>
+                                            }
+                                            else if (item.Status == 3) @* Đã giao *@
+                                            {
+                                                <span class="text-success"><i class="fa fa-check-circle"></i> Hoàn thành</span>
+                                            }
+                                            else if (item.Status == 4) @* Đã hủy *@
+                                            {
+                                                <form asp-action="UpdateStatus" asp-route-id="@item.Id" method="post" style="display:inline">
+                                                    <input type="hidden" name="status" value="0" />
+                                                    <button type="submit" class="btn btn-secondary btn-sm" title="Khôi phục đơn hàng" onclick="return confirm('Khôi phục đơn hàng này?');">
+                                                        <i class="fa fa-undo"></i> Khôi phục
+                                                    </button>
+                                                </form>
+                                            }
+                                            
                                             <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline">
-                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc muốn xoá?');">
+                                                <button type="submit" class="btn btn-danger btn-sm" title="Xóa" onclick="return confirm('Bạn có chắc muốn xoá?');">
                                                     <i class="fa fa-trash"></i>
                                                 </button>
                                             </form>

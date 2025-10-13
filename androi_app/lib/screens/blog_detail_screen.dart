@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 
+import '../config/api_config.dart';
 import '../models/blog.dart';
 import '../services/blog_service.dart';
 
@@ -85,7 +86,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
   String _imgUrl(String? path) {
     if (path == null || path.isEmpty) return '';
     if (path.startsWith('http')) return path;
-    const host = 'https://10.0.2.2:44364/Uploads';
+    final host = ApiConfig.uploadsPath;
     final p = path.startsWith('/') ? path : '/$path';
     return '$host$p';
   }
