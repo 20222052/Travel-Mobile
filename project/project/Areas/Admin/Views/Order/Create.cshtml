@@ -12,6 +12,23 @@
                     <h3 class="mb-0 px-3">THAY ĐỔI THÔNG TIN ĐƠN HÀNG</h3>
                 </div>
                 <div class="card-body">
+                    <!-- Hiển thị thông báo lỗi validation -->
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show mx-3" role="alert">
+                            <i class="fa fa-exclamation-circle"></i> <strong>Có lỗi xảy ra!</strong> Vui lòng kiểm tra lại thông tin.
+                            <ul class="mb-0 mt-2">
+                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            </ul>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    }
+
                     <form asp-action="Create" method="post">
                         @Html.AntiForgeryToken()
                         <input type="hidden" asp-for="Id" />
@@ -21,14 +38,30 @@
                             <input asp-for="Name" class="form-control" />
                             <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
-                        <div class="form-row px-3">
-                           
-                            <div class="form-group col-md-6">
-                                <label asp-for="Phone">Số điện thoại</label>
-                                <input asp-for="Phone" class="form-control" />
-                                <span asp-validation-for="Phone" class="text-danger"></span>
-                            </div>
+
+                        <div class="form-group px-3">
+                            <label asp-for="Phone">Số điện thoại</label>
+                            <input asp-for="Phone" class="form-control" />
+                            <span asp-validation-for="Phone" class="text-danger"></span>
                         </div>
+
+                        <div class="form-group px-3">
+                            <label asp-for="Email">Email</label>
+                            <input asp-for="Email" class="form-control" type="email" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group px-3">
+                            <label asp-for="Gender">Giới tính</label>
+                            <select asp-for="Gender" class="form-control">
+                                <option value="">-- Chọn giới tính --</option>
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                            <span asp-validation-for="Gender" class="text-danger"></span>
+                        </div>
+
                         <div class="form-group px-3">
                             <label asp-for="Address">Địa chỉ</label>
                             <input asp-for="Address" class="form-control" />
@@ -36,18 +69,30 @@
                         </div>
 
                         <div class="form-group px-3">
+                            <label asp-for="TourId">Tour <span class="text-danger">*</span></label>
+                            <select asp-for="TourId" class="form-control" asp-items="ViewBag.TourId">
+                                <option value="">-- Chọn tour --</option>
+                            </select>
+                            <span asp-validation-for="TourId" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group px-3">
                             <label asp-for="Status">Trạng thái</label>
                             <select asp-for="Status" class="form-control">
                                 <option value="0">Chờ xác nhận</option>
                                 <option value="1">Đã xác nhận</option>
-                                <option value="2">Đã huỷ</option>
+                                <option value="2">Đang giao</option>
+                                <option value="3">Đã giao</option>
+                                <option value="4">Đã hủy</option>
                             </select>
                             <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
 
                         <div class="form-group px-3">
-                            <label asp-for="UserId">Người đặt</label>
-                            <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
+                            <label asp-for="UserId">Người đặt <span class="text-danger">*</span></label>
+                            <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId">
+                                <option value="">-- Chọn người đặt --</option>
+                            </select>
                             <span asp-validation-for="UserId" class="text-danger"></span>
                         </div>
 

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import '../config/api_config.dart';
 import '../models/tour.dart';
 import '../services/tour_service.dart';
+import '../services/cart_service.dart';
 import '../state/session.dart';
 
 class DetailTourScreen extends StatefulWidget {
@@ -23,12 +26,54 @@ class _DetailTourScreenState extends State<DetailTourScreen> {
   final _fmtCurrency = NumberFormat("#,##0", "vi_VN");
   Tour? _tour;
   late Future<Tour> _future;
+  bool _addingToCart = false;
 
   @override
   void initState() {
     super.initState();
     _tour = widget.initial;                // hiển thị tạm nếu có
     _future = TourService.getTour(widget.id); // fetch chi tiết từ server
+  }
+
+  Future<void> _addToCart() async {
+    if (Session.current.value == null) {
+      if (mounted) context.push('/login');
+      return;
+    }
+
+    final t = _tour;
+    if (t?.id == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Không thể thêm vào giỏ hàng. Vui lòng thử lại.')),
+        );
+      }
+      return;
+    }
+
+    setState(() => _addingToCart = true);
+    
+    try {
+      await CartService.addToCart(t!.id!);
+      if (!mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Đã thêm "${t.name ?? 'Tour'}" vào giỏ hàng'),
+          action: SnackBarAction(
+            label: 'Xem giỏ hàng',
+            onPressed: () => context.push('/cart'),
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Lỗi: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _addingToCart = false);
+    }
   }
 
   @override
@@ -129,17 +174,15 @@ class _DetailTourScreenState extends State<DetailTourScreen> {
                 children: [
                   Expanded(
                     child: FilledButton.icon(
-                        onPressed:  () {
-                        if (Session.current.value == null) {
-                          context.push('/login');
-                          return;
-                        }
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Đã thêm Tour')),
-                        );
-                      },
-                      icon: const Icon(Icons.add),
-                      label: const Text('Thêm vào giỏ hàng'),
+                      onPressed: _addingToCart ? null : _addToCart,
+                      icon: _addingToCart 
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          )
+                        : const Icon(Icons.add),
+                      label: Text(_addingToCart ? 'Đang thêm...' : 'Thêm vào giỏ hàng'),
                     ),
                   ),
                 ],
@@ -197,10 +240,8 @@ class _DetailTourScreenState extends State<DetailTourScreen> {
         style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
       ),
       const SizedBox(height: 8),
-      Text(
-        _buildDescription(t),
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
+      // Hiển thị HTML content
+      _buildHtmlDescription(t),
       const SizedBox(height: 16),
     ];
 
@@ -242,20 +283,45 @@ class _DetailTourScreenState extends State<DetailTourScreen> {
         '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
   }
 
-  String _buildDescription(Tour? t) {
-    // Nếu backend chưa có field mô tả, hiển thị thông tin cơ bản thay thế
+  Widget _buildHtmlDescription(Tour? t) {
+    // Hiển thị HTML description từ database nếu có
+    if (t?.description != null && t!.description!.isNotEmpty) {
+      return Html(
+        data: t.description!,
+        style: {
+          "body": Style(
+            margin: Margins.zero,
+            padding: HtmlPaddings.zero,
+          ),
+          "h1, h2, h3, h4, h5, h6": Style(
+            margin: Margins.only(top: 8, bottom: 4),
+          ),
+          "p": Style(
+            margin: Margins.only(bottom: 8),
+            lineHeight: const LineHeight(1.5),
+          ),
+          "img": Style(
+            width: Width(100, Unit.percent),
+          ),
+        },
+      );
+    }
+    
+    // Nếu không có description, hiển thị thông tin cơ bản thay thế
     final name = t?.name ?? 'Tour';
     final place = (t?.location ?? '').isNotEmpty ? t!.location! : 'điểm đến hấp dẫn';
     final price = (t?.price != null) ? '${_fmtCurrency.format(t!.price)} đ' : 'liên hệ';
-    return 'Khám phá $name tại $place với mức giá $price. '
-        'Lịch trình và thông tin chi tiết sẽ được cập nhật trong phiên bản tiếp theo.';
+    return Text(
+      'Khám phá $name tại $place với mức giá $price. '
+      'Lịch trình và thông tin chi tiết sẽ được cập nhật sau.',
+      style: const TextStyle(fontSize: 14, height: 1.5),
+    );
   }
 
   String? _resolveImageUrl(String? url) {
-    const baseUrl = "https://10.0.2.2:5014/Uploads";
     if (url == null || url.isEmpty) return null;
     if (url.startsWith("http://") || url.startsWith("https://")) return url;
     final clean = url.startsWith("/") ? url.substring(1) : url;
-    return "$baseUrl/$clean";
+    return "${ApiConfig.uploadsPath}/$clean";
   }
 }

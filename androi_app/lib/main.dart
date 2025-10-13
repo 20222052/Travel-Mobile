@@ -13,6 +13,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'config/api_config.dart';
 import 'models/blog.dart';
 import 'models/tour.dart';
 import 'screens/home_screen.dart';
@@ -30,6 +31,14 @@ void main() {
   // Chỉ bật bỏ kiểm tra SSL ở DEV
   if (kDebugMode) {
     HttpOverrides.global = MyHttpOverrides();
+    
+    // In ra thông tin cấu hình API để debug
+    print('🌐 ===== API CONFIGURATION =====');
+    print('   Base URL: ${ApiConfig.baseUrl}');
+    print('   Uploads: ${ApiConfig.uploadsPath}');
+    print('   Is Emulator: ${ApiConfig.isEmulator}');
+    print('   Platform: ${Platform.operatingSystem}');
+    print('================================');
   }
   runApp(const MyApp());
 }

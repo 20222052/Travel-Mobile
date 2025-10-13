@@ -24,6 +24,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   DateTime? _dob;
 
   bool _loading = false;
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -120,39 +121,87 @@ class _RegisterScreenState extends State<RegisterScreen> {
             children: [
               TextFormField(
                 controller: _name,
-                decoration: const InputDecoration(labelText: 'Họ tên', prefixIcon: Icon(Icons.badge_outlined)),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Nhập họ tên' : null,
+                decoration: const InputDecoration(
+                  labelText: 'Họ tên *',
+                  prefixIcon: Icon(Icons.badge_outlined),
+                  hintText: 'Nguyễn Văn A',
+                  border: OutlineInputBorder(),
+                ),
+                textInputAction: TextInputAction.next,
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) {
+                    return 'Vui lòng nhập họ tên';
+                  }
+                  if (v.trim().length < 2) {
+                    return 'Họ tên phải có ít nhất 2 ký tự';
+                  }
+                  // Kiểm tra có chứa số không
+                  if (RegExp(r'[0-9]').hasMatch(v)) {
+                    return 'Họ tên không được chứa số';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 12),
 
               Row(
                 children: [
-                  const Text('Giới tính:'),
+                  const Text('Giới tính: ', style: TextStyle(fontSize: 16)),
                   const SizedBox(width: 12),
-                  ChoiceChip(
-                    label: const Text('Nam'),
-                    selected: _gender == 'Nam',
-                    onSelected: (_) => setState(() => _gender = 'Nam'),
+                  Expanded(
+                    child: ChoiceChip(
+                      label: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.male, size: 18),
+                          SizedBox(width: 4),
+                          Text('Nam'),
+                        ],
+                      ),
+                      selected: _gender == 'Nam',
+                      onSelected: (_) => setState(() => _gender = 'Nam'),
+                    ),
                   ),
                   const SizedBox(width: 8),
-                  ChoiceChip(
-                    label: const Text('Nữ'),
-                    selected: _gender == 'Nữ',
-                    onSelected: (_) => setState(() => _gender = 'Nữ'),
+                  Expanded(
+                    child: ChoiceChip(
+                      label: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.female, size: 18),
+                          SizedBox(width: 4),
+                          Text('Nữ'),
+                        ],
+                      ),
+                      selected: _gender == 'Nữ',
+                      onSelected: (_) => setState(() => _gender = 'Nữ'),
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
 
               TextFormField(
                 controller: _email,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(labelText: 'Email', prefixIcon: Icon(Icons.email_outlined)),
+                decoration: const InputDecoration(
+                  labelText: 'Email *',
+                  prefixIcon: Icon(Icons.email_outlined),
+                  hintText: 'example@email.com',
+                  border: OutlineInputBorder(),
+                ),
+                textInputAction: TextInputAction.next,
                 validator: (v) {
-                  if (v == null || v.trim().isEmpty) return 'Nhập email';
-                  // Validate email format
-                  final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-                  if (!emailRegex.hasMatch(v.trim())) return 'Email không hợp lệ';
+                  if (v == null || v.trim().isEmpty) {
+                    return 'Vui lòng nhập email';
+                  }
+                  // Validate email format chuẩn hơn
+                  final emailRegex = RegExp(
+                    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+                  );
+                  if (!emailRegex.hasMatch(v.trim())) {
+                    return 'Email không đúng định dạng (VD: user@gmail.com)';
+                  }
                   return null;
                 },
               ),
@@ -161,14 +210,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
               TextFormField(
                 controller: _phone,
                 keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(labelText: 'Số điện thoại (không bắt buộc)', prefixIcon: Icon(Icons.phone_outlined)),
+                decoration: const InputDecoration(
+                  labelText: 'Số điện thoại',
+                  prefixIcon: Icon(Icons.phone_outlined),
+                  hintText: '0901234567',
+                  border: OutlineInputBorder(),
+                  helperText: 'Không bắt buộc',
+                ),
+                textInputAction: TextInputAction.next,
                 validator: (v) {
                   // Nếu có nhập thì phải đúng format
                   if (v != null && v.trim().isNotEmpty) {
-                    // Validate phone format (VN: 10 số bắt đầu bằng 0)
-                    final phoneRegex = RegExp(r'^0[0-9]{9}$');
-                    if (!phoneRegex.hasMatch(v.trim())) {
-                      return 'Số điện thoại không hợp lệ (VD: 0901234567)';
+                    // Loại bỏ khoảng trắng và dấu gạch ngang
+                    final cleaned = v.trim().replaceAll(RegExp(r'[\s-]'), '');
+                    
+                    // Validate phone format (VN: 10-11 số bắt đầu bằng 0)
+                    final phoneRegex = RegExp(r'^0[0-9]{9,10}$');
+                    if (!phoneRegex.hasMatch(cleaned)) {
+                      return 'SĐT không hợp lệ. Phải có 10-11 số, bắt đầu bằng 0';
                     }
                   }
                   return null;
@@ -178,44 +237,153 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
               TextFormField(
                 controller: _address,
-                decoration: const InputDecoration(labelText: 'Địa chỉ', prefixIcon: Icon(Icons.home_outlined)),
+                decoration: const InputDecoration(
+                  labelText: 'Địa chỉ',
+                  prefixIcon: Icon(Icons.home_outlined),
+                  hintText: '123 Đường ABC, Quận XYZ',
+                  border: OutlineInputBorder(),
+                  helperText: 'Không bắt buộc',
+                ),
+                textInputAction: TextInputAction.next,
+                maxLines: 2,
               ),
               const SizedBox(height: 12),
 
               TextFormField(
                 controller: _username,
-                decoration: const InputDecoration(labelText: 'Username', prefixIcon: Icon(Icons.person_outline)),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Nhập username' : null,
+                decoration: const InputDecoration(
+                  labelText: 'Tên đăng nhập *',
+                  prefixIcon: Icon(Icons.person_outline),
+                  hintText: 'username',
+                  border: OutlineInputBorder(),
+                ),
+                textInputAction: TextInputAction.next,
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) {
+                    return 'Vui lòng nhập tên đăng nhập';
+                  }
+                  if (v.trim().length < 3) {
+                    return 'Tên đăng nhập phải có ít nhất 3 ký tự';
+                  }
+                  if (v.trim().length > 20) {
+                    return 'Tên đăng nhập không được quá 20 ký tự';
+                  }
+                  // Chỉ cho phép chữ cái, số và dấu gạch dưới
+                  if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(v.trim())) {
+                    return 'Chỉ được dùng chữ, số và dấu gạch dưới (_)';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 12),
 
               TextFormField(
                 controller: _password,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Mật khẩu', prefixIcon: Icon(Icons.lock_outline)),
-                validator: (v) => (v == null || v.isEmpty) ? 'Nhập mật khẩu' : null,
-              ),
-              const SizedBox(height: 12),
-
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: _pickDob,
-                  icon: const Icon(Icons.calendar_today_outlined),
-                  label: Text(_dob == null ? 'Chọn ngày sinh' : df.format(_dob!)),
+                obscureText: _obscurePassword,
+                decoration: InputDecoration(
+                  labelText: 'Mật khẩu *',
+                  prefixIcon: const Icon(Icons.lock_outline),
+                  hintText: 'Tối thiểu 6 ký tự',
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                  ),
                 ),
+                textInputAction: TextInputAction.done,
+                validator: (v) {
+                  if (v == null || v.isEmpty) {
+                    return 'Vui lòng nhập mật khẩu';
+                  }
+                  if (v.length < 6) {
+                    return 'Mật khẩu phải có ít nhất 6 ký tự';
+                  }
+                  if (v.length > 50) {
+                    return 'Mật khẩu không được quá 50 ký tự';
+                  }
+                  // Kiểm tra có chữ và số
+                  if (!RegExp(r'[a-zA-Z]').hasMatch(v)) {
+                    return 'Mật khẩu phải có ít nhất 1 chữ cái';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
 
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: _dob == null ? Colors.red.shade300 : Colors.grey.shade400,
+                    width: _dob == null ? 2 : 1,
+                  ),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: OutlinedButton.icon(
+                  onPressed: _pickDob,
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    side: BorderSide.none,
+                  ),
+                  icon: Icon(
+                    Icons.calendar_today_outlined,
+                    color: _dob == null ? Colors.red : null,
+                  ),
+                  label: Text(
+                    _dob == null ? 'Chọn ngày sinh *' : df.format(_dob!),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: _dob == null ? Colors.red : null,
+                    ),
+                  ),
+                ),
+              ),
+              if (_dob == null)
+                const Padding(
+                  padding: EdgeInsets.only(left: 12, top: 4),
+                  child: Text(
+                    'Vui lòng chọn ngày sinh',
+                    style: TextStyle(color: Colors.red, fontSize: 12),
+                  ),
+                ),
+              const SizedBox(height: 24),
+
               SizedBox(
                 width: double.infinity,
+                height: 50,
                 child: FilledButton.icon(
                   onPressed: _loading ? null : _submit,
+                  style: FilledButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
                   icon: _loading
-                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                      : const Icon(Icons.check),
-                  label: const Text('Đăng ký'),
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(Icons.app_registration, size: 24),
+                  label: Text(
+                    _loading ? 'Đang xử lý...' : 'Đăng ký tài khoản',
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                 ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Đã có tài khoản? '),
+                  TextButton(
+                    onPressed: () => context.pop(),
+                    child: const Text('Đăng nhập ngay', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ],
               ),
             ],
           ),

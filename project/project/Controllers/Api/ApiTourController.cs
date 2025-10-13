@@ -7,7 +7,7 @@ namespace project.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableCors("AllowOrigin")]
+    [EnableCors("AllowAll")]
     public class ApiTourController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -18,25 +18,45 @@ namespace project.Controllers.Api
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Tour>>> GetTours([FromQuery] string? name)
+        public async Task<ActionResult<IEnumerable<Tour>>> GetTours(
+            [FromQuery] string? name,
+            [FromQuery] int? categoryId,
+            [FromQuery] string sort = "desc")
         {
             if (_context.Tour == null)
             {
                 return NotFound();
             }
-            var tours = from p in _context.Tour
-                           select p;
+            
+            var tours = _context.Tour.AsQueryable();
+            
+            // Lọc theo tên
             if (!string.IsNullOrWhiteSpace(name))
             {
-                tours = from p in _context.Tour
-                           where p.Name.Contains(name)
-                           select p;
+                tours = tours.Where(p => p.Name.Contains(name));
             }
+            
+            // Lọc theo danh mục
+            if (categoryId.HasValue)
+            {
+                tours = tours.Where(p => p.CategoryId == categoryId.Value);
+            }
+            
+            // Sắp xếp theo ngày tạo
+            if (sort == "asc")
+            {
+                tours = tours.OrderBy(p => p.CreatedDate);
+            }
+            else
+            {
+                tours = tours.OrderByDescending(p => p.CreatedDate);
+            }
+            
             return await tours.ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Tour>> GetTour(string id)
+        public async Task<ActionResult<Tour>> GetTour(int id)
         {
             if (_context.Tour == null)
             {

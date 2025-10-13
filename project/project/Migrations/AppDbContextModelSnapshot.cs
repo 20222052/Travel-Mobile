@@ -194,6 +194,12 @@ namespace project.Migrations
                     b.Property<DateTime?>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Gender")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -203,10 +209,15 @@ namespace project.Migrations
                     b.Property<byte?>("Status")
                         .HasColumnType("tinyint");
 
+                    b.Property<int?>("TourId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TourId");
 
                     b.HasIndex("UserId");
 
@@ -415,9 +426,15 @@ namespace project.Migrations
 
             modelBuilder.Entity("project.Models.Order", b =>
                 {
+                    b.HasOne("project.Models.Tour", "Tour")
+                        .WithMany()
+                        .HasForeignKey("TourId");
+
                     b.HasOne("project.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
+
+                    b.Navigation("Tour");
 
                     b.Navigation("User");
                 });

@@ -13,7 +13,7 @@ namespace project.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableCors("AllowOrigin")]
+    [EnableCors("AllowAll")]
     public class ApiAccountController : Controller
     {
         private readonly AppDbContext _context;
@@ -244,6 +244,105 @@ namespace project.Controllers
                 return BadRequest(new { message = otpResult.Message });
 
             return Ok(new { message = "Đã gửi lại mã OTP qua email." });
+        }
+
+        [Authorize(AuthenticationSchemes = "UserScheme")]
+        [HttpPut("editProfile")]
+        public async Task<IActionResult> EditProfile([FromForm] User model, IFormFile? ImageFile)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return Unauthorized(new { message = "Chưa đăng nhập." });
+
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdStr, out int userId))
+                return BadRequest(new { message = "ID không hợp lệ." });
+
+            var user = await _context.User.FindAsync(userId);
+            if (user == null)
+                return NotFound(new { message = "Không tìm thấy người dùng." });
+
+            try
+            {
+                // Cập nhật thông tin
+                if (!string.IsNullOrWhiteSpace(model.Name))
+                    user.Name = model.Name;
+
+                if (!string.IsNullOrWhiteSpace(model.Gender))
+                    user.Gender = model.Gender;
+
+                if (!string.IsNullOrWhiteSpace(model.Phone))
+                    user.Phone = model.Phone;
+
+                if (!string.IsNullOrWhiteSpace(model.Address))
+                    user.Address = model.Address;
+
+                if (!string.IsNullOrWhiteSpace(model.Email))
+                    user.Email = model.Email;
+
+                if (model.DateOfBirth.HasValue)
+                    user.DateOfBirth = model.DateOfBirth;
+
+                // Xử lý upload ảnh đại diện
+                if (ImageFile != null && ImageFile.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads");
+                    if (!Directory.Exists(uploadsFolder))
+                        Directory.CreateDirectory(uploadsFolder);
+
+                    var uniqueFileName = $"{Guid.NewGuid()}_{ImageFile.FileName}";
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await ImageFile.CopyToAsync(stream);
+                    }
+
+                    // Xóa ảnh cũ nếu có
+                    if (!string.IsNullOrEmpty(user.Image))
+                    {
+                        var oldImagePath = Path.Combine(uploadsFolder, user.Image);
+                        if (System.IO.File.Exists(oldImagePath))
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                    }
+
+                    user.Image = uniqueFileName;
+                }
+
+                _context.Update(user);
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    message = "Cập nhật thông tin thành công.",
+                    user = new
+                    {
+                        id = user.Id,
+                        username = user.Username,
+                        name = user.Name,
+                        gender = user.Gender,
+                        email = user.Email,
+                        phone = user.Phone,
+                        image = user.Image,
+                        address = user.Address,
+                        dateOfBirth = user.DateOfBirth,
+                        role = user.Role
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Có lỗi xảy ra khi cập nhật thông tin.", error = ex.Message });
+            }
+        }
+
+        [Authorize(AuthenticationSchemes = "UserScheme")]
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync("UserScheme");
+            return Ok(new { message = "Đăng xuất thành công." });
         }
 
     }

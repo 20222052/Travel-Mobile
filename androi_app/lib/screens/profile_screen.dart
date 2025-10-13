@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../config/api_config.dart';
 import '../state/session.dart';
 import '../models/user.dart';
 import '../services/account_service.dart';
@@ -79,9 +80,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   String? _avatarUrl(String? fileName) {
     if (fileName == null || fileName.isEmpty) return null;
-    // chỉnh base đúng server của bạn
-    const base = 'https://10.0.2.2:44364/Uploads';
-    return '$base/$fileName';
+    return '${ApiConfig.uploadsPath}/$fileName';
   }
 
   Future<void> _pickImage() async {

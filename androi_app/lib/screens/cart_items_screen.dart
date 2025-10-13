@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 
+import '../config/api_config.dart';
 import '../services/cart_service.dart';
 import '../models/cart_item.dart';
 import '../state/session.dart';
@@ -112,7 +113,7 @@ class _CartItemsScreenState extends State<CartItemsScreen> {
     if (path == null || path.isEmpty) return '';
     if (path.startsWith('http')) return path;
     final p = path.startsWith('/') ? path : '/$path';
-    const host = 'https://10.0.2.2:44364/Uploads';
+    final host = ApiConfig.uploadsPath;
     return '$host$p';
   }
 
