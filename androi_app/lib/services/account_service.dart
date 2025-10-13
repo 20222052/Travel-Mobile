@@ -200,4 +200,53 @@ class AccountService {
       throw _ex(res);
     }
   }
+
+  /// Xác thực OTP
+  static Future<void> verifyOtp(String email, String code) async {
+    print('=== VERIFY OTP REQUEST ===');
+    print('URL: ${_api.uri('/api/ApiAccount/verify-otp')}');
+    print('Email: $email, Code: $code');
+
+    final res = await _api.client
+        .post(
+      _api.uri('/api/ApiAccount/verify-otp'),
+      headers: _api.jsonHeaders,
+      body: jsonEncode({
+        'email': email,
+        'code': code,
+      }),
+    )
+        .timeout(_timeout);
+
+    print('Response Status: ${res.statusCode}');
+    print('Response Body: ${utf8.decode(res.bodyBytes)}');
+
+    if (res.statusCode != 200) {
+      throw _ex(res);
+    }
+  }
+
+  /// Gửi lại OTP
+  static Future<void> resendOtp(String email) async {
+    print('=== RESEND OTP REQUEST ===');
+    print('URL: ${_api.uri('/api/ApiAccount/resend-otp')}');
+    print('Email: $email');
+
+    final res = await _api.client
+        .post(
+      _api.uri('/api/ApiAccount/resend-otp'),
+      headers: _api.jsonHeaders,
+      body: jsonEncode({
+        'email': email,
+      }),
+    )
+        .timeout(_timeout);
+
+    print('Response Status: ${res.statusCode}');
+    print('Response Body: ${utf8.decode(res.bodyBytes)}');
+
+    if (res.statusCode != 200) {
+      throw _ex(res);
+    }
+  }
 }

@@ -36,10 +36,111 @@ class _LoginScreenState extends State<LoginScreen> {
       context.pop(); // quay lại tab Account (đang mở)
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Đăng nhập thất bại: $e')));
+      
+      final errorMsg = e.toString();
+      
+      // Kiểm tra nếu lỗi là chưa xác thực OTP
+      if (errorMsg.contains('requireOtpVerification') || 
+          errorMsg.contains('chưa được xác thực') ||
+          errorMsg.contains('chưa xác thực')) {
+        
+        // Hiển thị dialog yêu cầu xác thực OTP
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            icon: const Icon(Icons.warning_amber, color: Colors.orange, size: 60),
+            title: const Text('Chưa xác thực tài khoản'),
+            content: const Text(
+              'Tài khoản của bạn chưa được xác thực.\n\n'
+              'Vui lòng kiểm tra email và xác thực mã OTP để có thể đăng nhập.',
+              textAlign: TextAlign.center,
+            ),
+            actionsAlignment: MainAxisAlignment.spaceEvenly,
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Để sau'),
+              ),
+              FilledButton.icon(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  // Hiển thị dialog nhập email để gửi lại OTP
+                  _showResendOtpDialog();
+                },
+                icon: const Icon(Icons.email),
+                label: const Text('Gửi lại OTP'),
+              ),
+            ],
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Đăng nhập thất bại: $e')),
+        );
+      }
     } finally {
       if (mounted) setState(() => _loading = false);
     }
+  }
+
+  void _showResendOtpDialog() {
+    final emailCtrl = TextEditingController();
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Nhập email của bạn'),
+        content: TextField(
+          controller: emailCtrl,
+          decoration: const InputDecoration(
+            labelText: 'Email',
+            hintText: 'example@email.com',
+            prefixIcon: Icon(Icons.email),
+          ),
+          keyboardType: TextInputType.emailAddress,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Hủy'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              final email = emailCtrl.text.trim();
+              if (email.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Vui lòng nhập email')),
+                );
+                return;
+              }
+              
+              Navigator.of(context).pop();
+              
+              try {
+                await AccountService.resendOtp(email);
+                if (!mounted) return;
+                
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('✅ Đã gửi lại OTP. Vui lòng kiểm tra email.'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                
+                // Chuyển đến màn xác thực OTP
+                context.push('/verify-otp', extra: email);
+              } catch (e) {
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Gửi OTP thất bại: $e')),
+                );
+              }
+            },
+            child: const Text('Gửi'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

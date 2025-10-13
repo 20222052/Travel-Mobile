@@ -71,8 +71,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
       await AccountService.register(payload);
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đăng ký thành công. Mời đăng nhập.')));
-      context.go('/login'); // quay về màn đăng nhập
+      
+      // Hiển thị dialog thành công và chuyển đến màn xác thực OTP
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          icon: const Icon(Icons.mark_email_read, color: Colors.green, size: 80),
+          title: const Text('Đăng ký thành công!'),
+          content: Text(
+            'Chúng tôi đã gửi mã OTP đến email:\n${_email.text.trim()}\n\n'
+            'Vui lòng kiểm tra email và nhập mã OTP để kích hoạt tài khoản.',
+            textAlign: TextAlign.center,
+          ),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: [
+            FilledButton.icon(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // Chuyển đến màn xác thực OTP với email
+                context.go('/verify-otp', extra: _email.text.trim());
+              },
+              icon: const Icon(Icons.verified_user),
+              label: const Text('Xác thực ngay'),
+            ),
+          ],
+        ),
+      );
     } catch (e) {
       if (!mounted) return;
       // Sẽ thấy message rõ ràng: 409 trùng username/email, 400 thiếu trường, v.v.

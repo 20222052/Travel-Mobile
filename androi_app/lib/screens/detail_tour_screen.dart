@@ -252,7 +252,7 @@ class _DetailTourScreenState extends State<DetailTourScreen> {
   }
 
   String? _resolveImageUrl(String? url) {
-    const baseUrl = "https://10.0.2.2:44364/Uploads";
+    const baseUrl = "https://10.0.2.2:5014/Uploads";
     if (url == null || url.isEmpty) return null;
     if (url.startsWith("http://") || url.startsWith("https://")) return url;
     final clean = url.startsWith("/") ? url.substring(1) : url;

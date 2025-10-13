@@ -8,6 +8,7 @@ import 'package:androi_app/screens/history_screen.dart';
 import 'package:androi_app/screens/login_screen.dart';
 import 'package:androi_app/screens/profile_screen.dart';
 import 'package:androi_app/screens/register_screen.dart';
+import 'package:androi_app/screens/verify_otp_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -54,6 +55,21 @@ final _router = GoRouter(
     GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
     GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
     GoRoute(path: '/register', builder: (_, __) => const RegisterScreen()),
+    GoRoute(
+      path: '/verify-otp',
+      builder: (context, state) {
+        final email = state.extra as String?;
+        if (email == null || email.isEmpty) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Lỗi')),
+            body: const Center(
+              child: Text('Email không hợp lệ. Vui lòng đăng ký lại.'),
+            ),
+          );
+        }
+        return VerifyOtpScreen(email: email);
+      },
+    ),
     GoRoute(path: '/', builder: (_, __) => const HomeScreen()),
     GoRoute(path: '/cart', builder: (_, __) => const CartItemsScreen()),
     GoRoute(path: '/checkout', builder: (_, __) => const CheckoutScreen()),

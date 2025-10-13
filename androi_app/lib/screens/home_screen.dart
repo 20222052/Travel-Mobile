@@ -273,7 +273,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 CircleAvatar(
                   radius: 28,
                   backgroundImage: (me.image?.isNotEmpty == true)
-                      ? NetworkImage('https://10.0.2.2:44364/Uploads/${me.image}')
+                      ? NetworkImage('https://10.0.2.2:5014/Uploads/${me.image}')
                       : null,
                   child: (me.image?.isNotEmpty == true)
                       ? null

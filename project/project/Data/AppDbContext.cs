@@ -14,5 +14,6 @@ public class AppDbContext : DbContext
     public DbSet<Cart> Cart { get; set; }
     public DbSet<CartItem> CartItem { get; set; }
     public DbSet<OrderDetail> OrderDetail { get; set; }
+    public DbSet<OtpCode> OtpCodes { get; set; }
 }
 
