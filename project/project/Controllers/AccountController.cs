@@ -115,6 +115,9 @@ namespace project.Controllers
 
             var orders = await _context.Order
                 .Where(o => o.UserId == userId)
+                .Include(o => o.OrderDetail)
+                    .ThenInclude(od => od.Tour)
+                .OrderByDescending(o => o.Date)
                 .ToListAsync();
 
             return View(orders);

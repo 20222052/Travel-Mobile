@@ -18,11 +18,14 @@ namespace project.Areas.Admin.Controllers
             _context = context;
             _env = env;
         }
-        public async Task<IActionResult> Index(string searchString, int page = 1)
+        public async Task<IActionResult> Index(string searchString, string sortOrder, int page = 1)
         {
             int pageSize = 6;
 
             ViewData["CurrentFilter"] = searchString;
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["TypeSortParm"] = string.IsNullOrEmpty(sortOrder) ? "type_desc" : "";
+            ViewData["IdSortParm"] = sortOrder == "id" ? "id_desc" : "id";
 
             var Query = _context.Category.AsQueryable();
 
@@ -31,10 +34,17 @@ namespace project.Areas.Admin.Controllers
                 Query = Query.Where(u => u.Type.ToLower().Contains(searchString.ToLower()));
             }
 
+            Query = sortOrder switch
+            {
+                "type_desc" => Query.OrderByDescending(c => c.Type),
+                "id" => Query.OrderBy(c => c.Id),
+                "id_desc" => Query.OrderByDescending(c => c.Id),
+                _ => Query.OrderBy(c => c.Type),
+            };
+
             int totalUsers = await Query.CountAsync();
 
             var cates = await Query
-                .OrderBy(u => u.Id)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -112,13 +122,41 @@ namespace project.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var cate = await _context.Category.FindAsync(id);
-            if (cate != null)
+            try
             {
+                var cate = await _context.Category.FindAsync(id);
+                if (cate == null)
+                {
+                    TempData["ErrorMessage"] = "Không tìm thấy danh mục cần xóa!";
+                    return RedirectToAction("Index");
+                }
+
                 _context.Category.Remove(cate);
                 await _context.SaveChangesAsync();
+                
+                TempData["SuccessMessage"] = "Xóa danh mục thành công!";
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
+            {
+                // Xử lý lỗi khóa ngoại
+                if (ex.InnerException != null && 
+                    (ex.InnerException.Message.Contains("FOREIGN KEY") || 
+                     ex.InnerException.Message.Contains("REFERENCE constraint")))
+                {
+                    TempData["ErrorMessage"] = "Không thể xóa danh mục này vì đang được sử dụng bởi Tour hoặc Blog. Vui lòng xóa các Tour/Blog liên quan trước!";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Có lỗi xảy ra khi xóa danh mục. Vui lòng thử lại!";
+                }
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Lỗi: {ex.Message}";
+                return RedirectToAction("Index");
+            }
         }
     }
 }

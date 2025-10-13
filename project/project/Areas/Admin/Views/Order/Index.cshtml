@@ -48,7 +48,8 @@
 }
 
 <form asp-action="Index" method="get" class="form-inline mb-3">
-    <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control mr-2" placeholder="Tìm theo tên..." style="width: 200px;" />
+    <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control mr-2" placeholder="Tìm theo tên, email, phone..." style="width: 250px;" />
+    <input type="hidden" name="sortOrder" value="@ViewData["CurrentSort"]" />
     <select name="statusFilter" class="form-control mr-2" style="width: 150px;">
         <option value="">Tất cả trạng thái</option>
         <option value="0" selected="@(ViewData["StatusFilter"]?.ToString() == "0")">Chờ xác nhận</option>
@@ -76,12 +77,24 @@
                                     <th>ID</th>
                                     <th>Tour</th>
                                     <th>User</th>
-                                    <th>Tên</th>
+                                    <th>
+                                        <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-searchString="@ViewData["CurrentFilter"]" class="text-dark">
+                                            Tên <i class="fa fa-sort"></i>
+                                        </a>
+                                    </th>
                                     <th>Địa chỉ</th>
                                     <th>Giới tính</th>
-                                    <th>Trạng thái</th>
-                                    <th>Ngày đặt</th>
-                                    <th></th>
+                                    <th>
+                                        <a asp-action="Index" asp-route-sortOrder="@ViewData["StatusSortParm"]" asp-route-searchString="@ViewData["CurrentFilter"]" class="text-dark">
+                                            Trạng thái <i class="fa fa-sort"></i>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-searchString="@ViewData["CurrentFilter"]" class="text-dark">
+                                            Ngày đặt <i class="fa fa-sort"></i>
+                                        </a>
+                                    </th>
+                                    <th>Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -108,13 +121,13 @@
                                             {
                                                 <form asp-action="UpdateStatus" asp-route-id="@item.Id" method="post" style="display:inline">
                                                     <input type="hidden" name="status" value="1" />
-                                                    <button type="submit" class="btn btn-info btn-sm" title="Xác nhận đơn hàng" onclick="return confirm('Xác nhận đơn hàng này?');">
+                                                    <button type="submit" class="btn btn-info btn-sm" title="Xác nhận đơn hàng">
                                                         <i class="fa fa-check"></i> Xác nhận
                                                     </button>
                                                 </form>
                                                 <form asp-action="UpdateStatus" asp-route-id="@item.Id" method="post" style="display:inline">
                                                     <input type="hidden" name="status" value="4" />
-                                                    <button type="submit" class="btn btn-danger btn-sm" title="Hủy đơn hàng" onclick="return confirm('Hủy đơn hàng này?');">
+                                                    <button type="submit" class="btn btn-danger btn-sm" title="Hủy đơn hàng">
                                                         <i class="fa fa-times"></i> Hủy
                                                     </button>
                                                 </form>
@@ -123,13 +136,13 @@
                                             {
                                                 <form asp-action="UpdateStatus" asp-route-id="@item.Id" method="post" style="display:inline">
                                                     <input type="hidden" name="status" value="2" />
-                                                    <button type="submit" class="btn btn-primary btn-sm" title="Chuyển sang đang giao" onclick="return confirm('Chuyển đơn hàng sang trạng thái đang giao?');">
+                                                    <button type="submit" class="btn btn-primary btn-sm" title="Chuyển sang đang giao">
                                                         <i class="fa fa-truck"></i> Giao hàng
                                                     </button>
                                                 </form>
                                                 <form asp-action="UpdateStatus" asp-route-id="@item.Id" method="post" style="display:inline">
                                                     <input type="hidden" name="status" value="4" />
-                                                    <button type="submit" class="btn btn-danger btn-sm" title="Hủy đơn hàng" onclick="return confirm('Hủy đơn hàng này?');">
+                                                    <button type="submit" class="btn btn-danger btn-sm" title="Hủy đơn hàng">
                                                         <i class="fa fa-times"></i> Hủy
                                                     </button>
                                                 </form>
@@ -138,13 +151,13 @@
                                             {
                                                 <form asp-action="UpdateStatus" asp-route-id="@item.Id" method="post" style="display:inline">
                                                     <input type="hidden" name="status" value="3" />
-                                                    <button type="submit" class="btn btn-success btn-sm" title="Hoàn thành đơn hàng" onclick="return confirm('Xác nhận đơn hàng đã giao thành công?');">
+                                                    <button type="submit" class="btn btn-success btn-sm" title="Hoàn thành đơn hàng">
                                                         <i class="fa fa-check-circle"></i> Đã giao
                                                     </button>
                                                 </form>
                                                 <form asp-action="UpdateStatus" asp-route-id="@item.Id" method="post" style="display:inline">
                                                     <input type="hidden" name="status" value="1" />
-                                                    <button type="submit" class="btn btn-secondary btn-sm" title="Quay lại đã xác nhận" onclick="return confirm('Chuyển về trạng thái đã xác nhận?');">
+                                                    <button type="submit" class="btn btn-secondary btn-sm" title="Quay lại đã xác nhận">
                                                         <i class="fa fa-undo"></i>
                                                     </button>
                                                 </form>
@@ -157,17 +170,12 @@
                                             {
                                                 <form asp-action="UpdateStatus" asp-route-id="@item.Id" method="post" style="display:inline">
                                                     <input type="hidden" name="status" value="0" />
-                                                    <button type="submit" class="btn btn-secondary btn-sm" title="Khôi phục đơn hàng" onclick="return confirm('Khôi phục đơn hàng này?');">
+                                                    <button type="submit" class="btn btn-secondary btn-sm" title="Khôi phục đơn hàng">
                                                         <i class="fa fa-undo"></i> Khôi phục
                                                     </button>
                                                 </form>
                                             }
                                             
-                                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline">
-                                                <button type="submit" class="btn btn-danger btn-sm" title="Xóa" onclick="return confirm('Bạn có chắc muốn xoá?');">
-                                                    <i class="fa fa-trash"></i>
-                                                </button>
-                                            </form>
                                         </td>
                                     </tr>
                                 }
@@ -185,16 +193,16 @@
             <div class="dataTables_paginate paging_simple_numbers" id="example2_paginate">
                 <ul class="pagination">
                     <li class="paginate_button previous @(currentPage == 1 ? "disabled" : "")" id="example2_previous">
-                        <a href="@Url.Action("Index", new { page =(currentPage == 1 ? 1: currentPage - 1), searchString = search })" aria-controls="example2" data-dt-idx="0" tabindex="0">Previous</a>
+                        <a href="@Url.Action("Index", new { page =(currentPage == 1 ? 1: currentPage - 1), searchString = search, sortOrder = ViewData["CurrentSort"] })" aria-controls="example2" data-dt-idx="0" tabindex="0">Previous</a>
                     </li>
                     @for (int i = 1; i <= totalPages; i++)
                     {
                         <li class="paginate_button @(i == currentPage ? "active" : "")">
-                            <a class="page-link" aria-controls="example2" href="@Url.Action("Index", new { page = i, searchString = search })">@i</a>
+                            <a class="page-link" aria-controls="example2" href="@Url.Action("Index", new { page = i, searchString = search, sortOrder = ViewData["CurrentSort"] })">@i</a>
                         </li>
                     }
                     <li class="paginate_button next @(currentPage >= totalPages ? "disabled" : "")" id="example2_next">
-                        <a href="@Url.Action("Index", new { page = (currentPage >= totalPages ? totalPages:currentPage + 1), searchString = search })" aria-controls="example2" data-dt-idx="7" tabindex="0">Next</a>
+                        <a href="@Url.Action("Index", new { page = (currentPage >= totalPages ? totalPages:currentPage + 1), searchString = search, sortOrder = ViewData["CurrentSort"] })" aria-controls="example2" data-dt-idx="7" tabindex="0">Next</a>
                     </li>
                 </ul>
             </div>

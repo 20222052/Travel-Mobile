@@ -18,22 +18,34 @@ namespace project.Areas.Admin.Controllers
             _context = context;
             _env = env;
         }
-        public async Task<IActionResult> Index(string searchString, int page = 1)
+        public async Task<IActionResult> Index(string searchString, string sortOrder, int page = 1)
         {
             int pageSize = 6;
             ViewData["CurrentFilter"] = searchString;
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["IdSortParm"] = string.IsNullOrEmpty(sortOrder) ? "id_desc" : "";
+            ViewData["ContentSortParm"] = sortOrder == "content" ? "content_desc" : "content";
 
             var Query = _context.Contact.AsQueryable();
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                Query = Query.Where(u => u.Content.Contains(searchString));
+                Query = Query.Where(u => (u.Content != null && u.Content.Contains(searchString)) || 
+                                       (u.Name != null && u.Name.Contains(searchString)) || 
+                                       (u.Email != null && u.Email.Contains(searchString)));
             }
+
+            Query = sortOrder switch
+            {
+                "id_desc" => Query.OrderByDescending(c => c.Id),
+                "content" => Query.OrderBy(c => c.Content),
+                "content_desc" => Query.OrderByDescending(c => c.Content),
+                _ => Query.OrderBy(c => c.Id),
+            };
 
             int total = await Query.CountAsync();
 
             var history = await Query
-                .OrderBy(u => u.Id)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -101,13 +113,41 @@ namespace project.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var contact = await _context.Contact.FindAsync(id);
-            if (contact != null)
+            try
             {
+                var contact = await _context.Contact.FindAsync(id);
+                if (contact == null)
+                {
+                    TempData["ErrorMessage"] = "Không tìm thấy liên hệ cần xóa!";
+                    return RedirectToAction("Index");
+                }
+
                 _context.Contact.Remove(contact);
                 await _context.SaveChangesAsync();
+                
+                TempData["SuccessMessage"] = "Xóa liên hệ thành công!";
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
+            {
+                // Xử lý lỗi khóa ngoại
+                if (ex.InnerException != null && 
+                    (ex.InnerException.Message.Contains("FOREIGN KEY") || 
+                     ex.InnerException.Message.Contains("REFERENCE constraint")))
+                {
+                    TempData["ErrorMessage"] = "Không thể xóa liên hệ này vì đang được tham chiếu bởi dữ liệu khác!";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Có lỗi xảy ra khi xóa liên hệ. Vui lòng thử lại!";
+                }
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Lỗi: {ex.Message}";
+                return RedirectToAction("Index");
+            }
         }
     }
 }

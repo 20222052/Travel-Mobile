@@ -32,6 +32,7 @@ namespace project.Models
         // Navigation Properties
         public virtual Tour? Tour { get; set; }
         public virtual User? User { get; set; }
+        public virtual ICollection<OrderDetail>? OrderDetail { get; set; }
 
         // Helper method to get status text
         public string GetStatusText()

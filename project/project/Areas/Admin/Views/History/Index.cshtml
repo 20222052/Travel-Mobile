@@ -6,9 +6,32 @@
     int totalPages = (int)ViewData["TotalPages"];
     string search = ViewData["CurrentFilter"] as string;
 }
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fa fa-check-circle"></i> @TempData["SuccessMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fa fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
 <form asp-action="Index" method="get" class="form-inline mb-3">
-    <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control mr-2" placeholder="Nhập thông tin tìm kiếm..." />
-    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+    <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control mr-2" placeholder="Tìm theo nội dung, user, tour..." />
+    <input type="hidden" name="sortOrder" value="@ViewData["CurrentSort"]" />
+    <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Tìm kiếm</button>
+    <a asp-action="Index" class="btn btn-secondary ml-2"><i class="fa fa-refresh"></i> Làm mới</a>
 </form>
 <div class="container-fluid mt-4" style="margin-top:15px;">
     <div class="row">
@@ -16,19 +39,32 @@
             <div class="card shadow-sm">
                 @* <a asp-action="Create" class="btn btn-success btn-sm"><i class="fa fa-plus"></i> Thêm mới</a> *@
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0" style="padding: 15px;">LICH SỬ</h4>
+                    <h4 class="mb-0" style="padding: 15px;">LỊCH SỬ</h4>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover">
                             <thead class="thead-light">
                                 <tr>
-                                    <th>Id</th>
-                                    <th>Người dùng</th>
-                                    <th>Tour</th>
+                                    <th>
+                                        <a asp-action="Index" asp-route-sortOrder="@ViewData["IdSortParm"]" asp-route-searchString="@ViewData["CurrentFilter"]" class="text-dark">
+                                            Id <i class="fa fa-sort"></i>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a asp-action="Index" asp-route-sortOrder="@ViewData["UserSortParm"]" asp-route-searchString="@ViewData["CurrentFilter"]" class="text-dark">
+                                            Người dùng <i class="fa fa-sort"></i>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a asp-action="Index" asp-route-sortOrder="@ViewData["TourSortParm"]" asp-route-searchString="@ViewData["CurrentFilter"]" class="text-dark">
+                                            Tour <i class="fa fa-sort"></i>
+                                        </a>
+                                    </th>
                                     <th>Nội dung</th>
                                     <th>Thời gian</th>
                                     <th>Trạng thái</th>
+                                    <th>Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -63,16 +99,16 @@
             <div class="dataTables_paginate paging_simple_numbers" id="example2_paginate">
                 <ul class="pagination">
                     <li class="paginate_button previous @(currentPage == 1 ? "disabled" : "")" id="example2_previous">
-                        <a href="@Url.Action("Index", new { page =(currentPage == 1 ? 1: currentPage - 1), searchString = search })" aria-controls="example2" data-dt-idx="0" tabindex="0">Previous</a>
+                        <a href="@Url.Action("Index", new { page =(currentPage == 1 ? 1: currentPage - 1), searchString = search, sortOrder = ViewData["CurrentSort"] })" aria-controls="example2" data-dt-idx="0" tabindex="0">Previous</a>
                     </li>
                     @for (int i = 1; i <= totalPages; i++)
                     {
                         <li class="paginate_button @(i == currentPage ? "active" : "")">
-                            <a class="page-link" aria-controls="example2" href="@Url.Action("Index", new { page = i, searchString = search })">@i</a>
+                            <a class="page-link" aria-controls="example2" href="@Url.Action("Index", new { page = i, searchString = search, sortOrder = ViewData["CurrentSort"] })">@i</a>
                         </li>
                     }
                     <li class="paginate_button next @(currentPage >= totalPages ? "disabled" : "")" id="example2_next">
-                        <a href="@Url.Action("Index", new { page = (currentPage >= totalPages ? totalPages:currentPage + 1), searchString = search })" aria-controls="example2" data-dt-idx="7" tabindex="0">Next</a>
+                        <a href="@Url.Action("Index", new { page = (currentPage >= totalPages ? totalPages:currentPage + 1), searchString = search, sortOrder = ViewData["CurrentSort"] })" aria-controls="example2" data-dt-idx="7" tabindex="0">Next</a>
                     </li>
                 </ul>
             </div>

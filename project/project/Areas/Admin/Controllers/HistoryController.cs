@@ -18,10 +18,14 @@ namespace project.Areas.Admin.Controllers
             _context = context;
             _env = env;
         }
-        public async Task<IActionResult> Index(string searchString, int page = 1)
+        public async Task<IActionResult> Index(string searchString, string sortOrder, int page = 1)
         {
             int pageSize = 6;
             ViewData["CurrentFilter"] = searchString;
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["IdSortParm"] = string.IsNullOrEmpty(sortOrder) ? "id_desc" : "";
+            ViewData["UserSortParm"] = sortOrder == "user" ? "user_desc" : "user";
+            ViewData["TourSortParm"] = sortOrder == "tour" ? "tour_desc" : "tour";
 
             var Query = _context.History
                 .Include(t => t.User) //Include để có dữ liệu User
@@ -30,13 +34,24 @@ namespace project.Areas.Admin.Controllers
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                Query = Query.Where(u => u.Content.Contains(searchString));
+                Query = Query.Where(u => (u.Content != null && u.Content.Contains(searchString)) || 
+                                       (u.User != null && u.User.Name != null && u.User.Name.Contains(searchString)) || 
+                                       (u.Tour != null && u.Tour.Name != null && u.Tour.Name.Contains(searchString)));
             }
+
+            Query = sortOrder switch
+            {
+                "id_desc" => Query.OrderByDescending(h => h.Id),
+                "user" => Query.OrderBy(h => h.User != null ? h.User.Name : ""),
+                "user_desc" => Query.OrderByDescending(h => h.User != null ? h.User.Name : ""),
+                "tour" => Query.OrderBy(h => h.Tour != null ? h.Tour.Name : ""),
+                "tour_desc" => Query.OrderByDescending(h => h.Tour != null ? h.Tour.Name : ""),
+                _ => Query.OrderBy(h => h.Id),
+            };
 
             int total = await Query.CountAsync();
 
             var history = await Query
-                .OrderBy(u => u.Id)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -113,13 +128,41 @@ namespace project.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var history = await _context.History.FindAsync(id);
-            if (history != null)
+            try
             {
+                var history = await _context.History.FindAsync(id);
+                if (history == null)
+                {
+                    TempData["ErrorMessage"] = "Không tìm thấy lịch sử cần xóa!";
+                    return RedirectToAction("Index");
+                }
+
                 _context.History.Remove(history);
                 await _context.SaveChangesAsync();
+                
+                TempData["SuccessMessage"] = "Xóa lịch sử thành công!";
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
+            {
+                // Xử lý lỗi khóa ngoại
+                if (ex.InnerException != null && 
+                    (ex.InnerException.Message.Contains("FOREIGN KEY") || 
+                     ex.InnerException.Message.Contains("REFERENCE constraint")))
+                {
+                    TempData["ErrorMessage"] = "Không thể xóa lịch sử này vì đang được tham chiếu bởi dữ liệu khác!";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Có lỗi xảy ra khi xóa lịch sử. Vui lòng thử lại!";
+                }
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Lỗi: {ex.Message}";
+                return RedirectToAction("Index");
+            }
         }
     }
 }

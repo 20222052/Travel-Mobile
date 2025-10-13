@@ -1,9 +1,93 @@
 ﻿@model List<project.Models.Order>;
 @{
     ViewData["Title"] = "Lịch sử đặt tour";
-    Layout = "~/Views/Shared/_Layout.cshtml"; // hoặc "_LayoutUser"
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<style>
+    .order-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: box-shadow 0.3s;
+    }
+    .order-card:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    .order-header {
+        background: linear-gradient(131deg, #feb47b 0%, #ff7e5f 100%);
+        color: white;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .order-info {
+        padding: 20px;
+        background: white;
+    }
+    .order-details {
+        border-top: 2px solid #f0f0f0;
+        padding: 15px 20px;
+        background: #f9f9f9;
+    }
+    .order-detail-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    .order-detail-item:last-child {
+        border-bottom: none;
+    }
+    .badge-custom {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .badge-warning { background: #ffc107; color: #000; }
+    .badge-info { background: #17a2b8; color: #fff; }
+    .badge-primary { background: #007bff; color: #fff; }
+    .badge-success { background: #28a745; color: #fff; }
+    .badge-danger { background: #dc3545; color: #fff; }
+    .toggle-details {
+        cursor: pointer;
+        color: #ff7e5f;
+        font-weight: 600;
+        text-decoration: none;
+    }
+    .toggle-details:hover {
+        color: #fe5c24;
+        text-decoration: underline;
+    }
+    .info-row {
+        display: flex;
+        margin-bottom: 10px;
+    }
+    .info-label {
+        font-weight: 600;
+        width: 150px;
+        color: #555;
+    }
+    .info-value {
+        color: #333;
+    }
+    .tour-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-right: 15px;
+    }
+    .total-price {
+        font-size: 20px;
+        font-weight: bold;
+        color: #ff7e5f;
+    }
+</style>
 
 <section class="breadcrumb breadcrumb_bg">
     <div class="container">
@@ -11,57 +95,169 @@
             <div class="col-lg-12">
                 <div class="breadcrumb_iner">
                     <div class="breadcrumb_iner_item text-center">
-                        <h2>history</h2>
-                        <p>home . history</p>
+                        <h2>Lịch sử đặt tour</h2>
+                        <p>Trang chủ . Lịch sử đặt tour</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<div class="container py-5" >
-    <h3 class="mb-4">Lịch sử đặt tour</h3>
+
+<div class="container py-5">
+    <h3 class="mb-4"><i class="fas fa-history"></i> Lịch sử đặt tour của bạn</h3>
 
     @if (!Model.Any())
     {
-        <div class="alert alert-info">Bạn chưa đặt tour nào.</div>
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> Bạn chưa đặt tour nào.
+        </div>
     }
     else
     {
-        <table class="table table-bordered table-striped">
-            <thead class="table-light">
-                <tr>
-                    <th>STT</th>
-                    <th>Tên tour</th>
-                    <th>Ngày đặt</th>
-                    <th>Trạng thái</th>
-                </tr>
-            </thead>
-            <tbody>
-                @{
-                    int stt = 1;
-                }
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@stt</td>
-                        <td>@(item.Date.HasValue ? item.Date.Value.ToString("dd/MM/yyyy") : "")</td>
-                        <td>
-                            @{
-                                string statusText = item.Status switch
-                                {
-                                    0 => "Chờ xử lý",
-                                    1 => "Đã xác nhận",
-                                    2 => "Đã hủy",
-                                    _ => "Không xác định"
-                                };
+        @foreach (var order in Model)
+        {
+            var orderId = "order-" + order.Id;
+            decimal totalAmount = 0;
+            
+            @if (order.OrderDetail != null && order.OrderDetail.Any())
+            {
+                totalAmount = order.OrderDetail.Sum(od => (decimal)(od.Tour?.Price ?? 0) * (od.Quantity ?? 1));
+            }
+
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <h5 class="mb-1">
+                            <i class="fas fa-receipt"></i> Đơn hàng #@order.Id
+                        </h5>
+                        <small>Đặt ngày: @(order.Date?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</small>
+                    </div>
+                    <span class="badge-custom @order.GetStatusBadgeClass()">
+                        @order.GetStatusText()
+                    </span>
+                </div>
+
+                <div class="order-info">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-row">
+                                <span class="info-label"><i class="fas fa-user"></i> Họ tên:</span>
+                                <span class="info-value">@order.Name</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label"><i class="fas fa-phone"></i> Số điện thoại:</span>
+                                <span class="info-value">@order.Phone</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label"><i class="fas fa-envelope"></i> Email:</span>
+                                <span class="info-value">@order.Email</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-row">
+                                <span class="info-label"><i class="fas fa-map-marker-alt"></i> Địa chỉ:</span>
+                                <span class="info-value">@order.Address</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label"><i class="fas fa-venus-mars"></i> Giới tính:</span>
+                                <span class="info-value">@order.Gender</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label"><i class="fas fa-box"></i> Số tour:</span>
+                                <span class="info-value">@(order.OrderDetail?.Count ?? 0) tour</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 d-flex justify-content-between align-items-center">
+                        <a class="toggle-details" data-toggle="collapse" href="#@orderId" role="button" aria-expanded="false">
+                            <i class="fas fa-eye"></i> Xem chi tiết đơn hàng
+                        </a>
+                        <div class="total-price">
+                            Tổng: @totalAmount.ToString("N0") VNĐ
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapse order-details" id="@orderId">
+                    <h6 class="mb-3"><i class="fas fa-list"></i> Chi tiết tour đã đặt:</h6>
+                    
+                    @if (order.OrderDetail != null && order.OrderDetail.Any())
+                    {
+                        @foreach (var detail in order.OrderDetail)
+                        {
+                            var tour = detail.Tour;
+                            if (tour != null)
+                            {
+                                var itemTotal = (tour.Price ?? 0) * (detail.Quantity ?? 1);
+                                
+                                <div class="order-detail-item">
+                                    <div class="d-flex align-items-center flex-grow-1">
+                                        @if (!string.IsNullOrEmpty(tour.Image))
+                                        {
+                                            <img src="~/Uploads/@tour.Image" alt="@tour.Name" class="tour-image" />
+                                        }
+                                        else
+                                        {
+                                            <div class="tour-image d-flex align-items-center justify-content-center bg-light">
+                                                <i class="fas fa-image fa-2x text-muted"></i>
+                                            </div>
+                                        }
+                                        <div>
+                                            <h6 class="mb-1">@tour.Name</h6>
+                                            <p class="mb-0 text-muted small">
+                                                <i class="fas fa-clock"></i> Thời gian: @tour.Duration
+                                            </p>
+                                            <p class="mb-0 text-muted small">
+                                                <i class="fas fa-tag"></i> Đơn giá: @tour.Price?.ToString("N0") VNĐ
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="mb-1">
+                                            <strong>x @detail.Quantity</strong>
+                                        </p>
+                                        <p class="mb-0 text-danger font-weight-bold">
+                                            @itemTotal.ToString("N0") VNĐ
+                                        </p>
+                                    </div>
+                                </div>
                             }
-                            <span>@statusText</span>
-                        </td>
-                    </tr>
-                    stt++;
-                }
-            </tbody>
-        </table>
+                        }
+                        
+                        <div class="mt-3 pt-3 border-top">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0"><i class="fas fa-money-bill-wave"></i> Tổng thanh toán:</h5>
+                                <h4 class="mb-0 text-danger font-weight-bold">
+                                    @totalAmount.ToString("N0") VNĐ
+                                </h4>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Không có chi tiết tour.</p>
+                    }
+                </div>
+            </div>
+        }
     }
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Animation when expanding details
+            $('.order-details').on('show.bs.collapse', function() {
+                $(this).prev().find('.toggle-details i').removeClass('fa-eye').addClass('fa-eye-slash');
+                $(this).prev().find('.toggle-details').html('<i class="fas fa-eye-slash"></i> Ẩn chi tiết');
+            });
+            
+            $('.order-details').on('hide.bs.collapse', function() {
+                $(this).prev().find('.toggle-details i').removeClass('fa-eye-slash').addClass('fa-eye');
+                $(this).prev().find('.toggle-details').html('<i class="fas fa-eye"></i> Xem chi tiết đơn hàng');
+            });
+        });
+    </script>
+}

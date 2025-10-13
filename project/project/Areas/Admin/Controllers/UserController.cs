@@ -19,11 +19,16 @@ namespace project.Areas.Admin.Controllers
             _context = context;
             _env = env;
         }
-        public async Task<IActionResult> Index(string searchString, int page = 1)
+        public async Task<IActionResult> Index(string searchString, string sortOrder, int page = 1)
         {
             int pageSize = 6;
 
             ViewData["CurrentFilter"] = searchString;
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["EmailSortParm"] = sortOrder == "email" ? "email_desc" : "email";
+            ViewData["UsernameSortParm"] = sortOrder == "username" ? "username_desc" : "username";
+            ViewData["DateSortParm"] = sortOrder == "date" ? "date_desc" : "date";
 
             var usersQuery = _context.User.AsQueryable();
 
@@ -32,10 +37,21 @@ namespace project.Areas.Admin.Controllers
                 usersQuery = usersQuery.Where(u => u.Name.Contains(searchString) || u.Email.Contains(searchString) || u.Username.Contains(searchString) || u.Phone.Contains(searchString));
             }
 
+            usersQuery = sortOrder switch
+            {
+                "name_desc" => usersQuery.OrderByDescending(u => u.Name),
+                "email" => usersQuery.OrderBy(u => u.Email),
+                "email_desc" => usersQuery.OrderByDescending(u => u.Email),
+                "username" => usersQuery.OrderBy(u => u.Username),
+                "username_desc" => usersQuery.OrderByDescending(u => u.Username),
+                "date" => usersQuery.OrderBy(u => u.CreatedDate),
+                "date_desc" => usersQuery.OrderByDescending(u => u.CreatedDate),
+                _ => usersQuery.OrderBy(u => u.Name),
+            };
+
             int totalUsers = await usersQuery.CountAsync();
 
             var users = await usersQuery
-                .OrderBy(u => u.Id)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -190,13 +206,49 @@ namespace project.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var user = await _context.User.FindAsync(id);
-            if (user != null)
+            try
             {
+                var user = await _context.User.FindAsync(id);
+                if (user == null)
+                {
+                    TempData["ErrorMessage"] = "Không tìm thấy người dùng cần xóa!";
+                    return RedirectToAction("Index");
+                }
+
+                // Kiểm tra xem có phải admin đang login không
+                var currentUsername = User.FindFirst("Username")?.Value;
+                if (user.Username == currentUsername)
+                {
+                    TempData["ErrorMessage"] = "Không thể xóa tài khoản đang đăng nhập!";
+                    return RedirectToAction("Index");
+                }
+
                 _context.User.Remove(user);
                 await _context.SaveChangesAsync();
+                
+                TempData["SuccessMessage"] = "Xóa người dùng thành công!";
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
+            {
+                // Xử lý lỗi khóa ngoại
+                if (ex.InnerException != null && 
+                    (ex.InnerException.Message.Contains("FOREIGN KEY") || 
+                     ex.InnerException.Message.Contains("REFERENCE constraint")))
+                {
+                    TempData["ErrorMessage"] = "Không thể xóa người dùng này vì đang có đơn hàng hoặc lịch sử liên quan. Vui lòng xóa các dữ liệu liên quan trước!";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Có lỗi xảy ra khi xóa người dùng. Vui lòng thử lại!";
+                }
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Lỗi: {ex.Message}";
+                return RedirectToAction("Index");
+            }
         }
     }
 }
