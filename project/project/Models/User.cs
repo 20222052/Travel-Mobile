@@ -36,6 +36,8 @@ namespace project.Models
         [DataType(DataType.Date)]
         public DateTime? DateOfBirth { get; set; }
 
+        public bool OtpVerified { get; set; } = false;
+
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
         // Navigation Properties

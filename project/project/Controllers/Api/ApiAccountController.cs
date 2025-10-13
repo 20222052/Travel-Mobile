@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using project.Models;
+using project.OtpConfig;
 using System.Security.Claims;
 
 namespace project.Controllers
@@ -16,11 +17,15 @@ namespace project.Controllers
     public class ApiAccountController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IOtpService _otpService;
 
-        public ApiAccountController(AppDbContext context)
+        public ApiAccountController(AppDbContext context, IOtpService otpService)
         {
             _context = context;
+            _otpService = otpService;
         }
+
+
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginViewModel model)
@@ -34,6 +39,17 @@ namespace project.Controllers
             if (user == null || user.Role != "USER")
             {
                 return Unauthorized(new { message = "Tài khoản không tồn tại hoặc không phải USER." });
+            }
+
+            // Kiểm tra tài khoản đã xác thực OTP chưa
+            if (!user.OtpVerified)
+            {
+                return Unauthorized(new 
+                { 
+                    message = "Tài khoản chưa được xác thực. Vui lòng kiểm tra email và xác thực OTP.",
+                    email = user.Email,
+                    requireOtpVerification = true
+                });
             }
 
             var hasher = new PasswordHasher<User>();
@@ -129,7 +145,8 @@ namespace project.Controllers
                 Username = model.Username,
                 Role = "USER",
                 DateOfBirth = model.DateOfBirth,
-                CreatedDate = DateTime.Now
+                CreatedDate = DateTime.Now,
+                OtpVerified = false // Tài khoản chưa được xác thực
             };
 
             // Hash mật khẩu
@@ -139,7 +156,94 @@ namespace project.Controllers
             _context.User.Add(user);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Đăng ký thành công." });
+            // Tạo và gửi OTP qua email
+            try
+            {
+                var otpRequest = new Models.Request.OtpRequest { Email = model.Email };
+                var otpResult = await _otpService.GenerateOtpAsync(otpRequest);
+
+                if (!otpResult.Success)
+                {
+                    return Ok(new 
+                    { 
+                        message = "Đăng ký thành công nhưng không thể gửi OTP. Vui lòng yêu cầu gửi lại OTP.",
+                        email = model.Email,
+                        otpSent = false
+                    });
+                }
+
+                return Ok(new 
+                { 
+                    message = "Đăng ký thành công! Vui lòng kiểm tra email để lấy mã OTP xác thực tài khoản.",
+                    email = model.Email,
+                    otpSent = true
+                });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new 
+                { 
+                    message = "Đăng ký thành công nhưng gặp lỗi khi gửi OTP: " + ex.Message,
+                    email = model.Email,
+                    otpSent = false
+                });
+            }
+        }
+
+        [HttpPost("verify-otp")]
+        public async Task<IActionResult> VerifyOtp([FromBody] Models.Request.VerifyOtpRequest request)
+        {
+            if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Code))
+                return BadRequest(new { message = "Email và mã OTP không được để trống." });
+
+            // Kiểm tra user có tồn tại không
+            var user = await _context.User.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (user == null)
+                return NotFound(new { message = "Không tìm thấy tài khoản với email này." });
+
+            // Kiểm tra user đã xác thực chưa
+            if (user.OtpVerified)
+                return BadRequest(new { message = "Tài khoản đã được xác thực trước đó." });
+
+            // Xác thực OTP
+            var otpResult = await _otpService.VerifyOtpAsync(request);
+
+            if (!otpResult.Success)
+                return BadRequest(new { message = otpResult.Message });
+
+            // Cập nhật trạng thái xác thực
+            user.OtpVerified = true;
+            await _context.SaveChangesAsync();
+
+            return Ok(new 
+            { 
+                message = "Xác thực OTP thành công! Tài khoản đã được kích hoạt.",
+                verified = true
+            });
+        }
+
+        [HttpPost("resend-otp")]
+        public async Task<IActionResult> ResendOtp([FromBody] Models.Request.OtpRequest request)
+        {
+            if (string.IsNullOrEmpty(request.Email))
+                return BadRequest(new { message = "Email không được để trống." });
+
+            // Kiểm tra user có tồn tại không
+            var user = await _context.User.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (user == null)
+                return NotFound(new { message = "Không tìm thấy tài khoản với email này." });
+
+            // Kiểm tra user đã xác thực chưa
+            if (user.OtpVerified)
+                return BadRequest(new { message = "Tài khoản đã được xác thực." });
+
+            // Tạo và gửi OTP mới
+            var otpResult = await _otpService.GenerateOtpAsync(request);
+
+            if (!otpResult.Success)
+                return BadRequest(new { message = otpResult.Message });
+
+            return Ok(new { message = "Đã gửi lại mã OTP qua email." });
         }
 
     }
