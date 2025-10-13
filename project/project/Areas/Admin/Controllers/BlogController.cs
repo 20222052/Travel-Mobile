@@ -18,11 +18,15 @@ namespace project.Areas.Admin.Controllers
             _context = context;
             _env = env;
         }
-        public async Task<IActionResult> Index(string searchString, int page = 1)
+        public async Task<IActionResult> Index(string searchString, string sortOrder, int page = 1)
         {
             int pageSize = 6;
 
             ViewData["CurrentFilter"] = searchString;
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["TitleSortParm"] = string.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "date" ? "date_desc" : "date";
+            ViewData["CategorySortParm"] = sortOrder == "category" ? "category_desc" : "category";
 
             var Query = _context.Blog
                 .Include(b => b.Category)
@@ -33,10 +37,19 @@ namespace project.Areas.Admin.Controllers
                 Query = Query.Where(u => u.Title.Contains(searchString) || u.Content.Contains(searchString));
             }
 
+            Query = sortOrder switch
+            {
+                "title_desc" => Query.OrderByDescending(b => b.Title),
+                "date" => Query.OrderBy(b => b.PostedDate),
+                "date_desc" => Query.OrderByDescending(b => b.PostedDate),
+                "category" => Query.OrderBy(b => b.Category != null ? b.Category.Type : ""),
+                "category_desc" => Query.OrderByDescending(b => b.Category != null ? b.Category.Type : ""),
+                _ => Query.OrderBy(b => b.Title),
+            };
+
             int totalUsers = await Query.CountAsync();
 
             var blog = await Query
-                .OrderBy(b => b.Id)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -158,13 +171,41 @@ namespace project.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var blog = await _context.Blog.FindAsync(id);
-            if (blog != null)
+            try
             {
+                var blog = await _context.Blog.FindAsync(id);
+                if (blog == null)
+                {
+                    TempData["ErrorMessage"] = "Không tìm thấy bài viết cần xóa!";
+                    return RedirectToAction("Index");
+                }
+
                 _context.Blog.Remove(blog);
                 await _context.SaveChangesAsync();
+                
+                TempData["SuccessMessage"] = "Xóa bài viết thành công!";
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
+            {
+                // Xử lý lỗi khóa ngoại
+                if (ex.InnerException != null && 
+                    (ex.InnerException.Message.Contains("FOREIGN KEY") || 
+                     ex.InnerException.Message.Contains("REFERENCE constraint")))
+                {
+                    TempData["ErrorMessage"] = "Không thể xóa bài viết này vì đang được tham chiếu bởi dữ liệu khác. Vui lòng xóa các dữ liệu liên quan trước!";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Có lỗi xảy ra khi xóa bài viết. Vui lòng thử lại!";
+                }
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Lỗi: {ex.Message}";
+                return RedirectToAction("Index");
+            }
         }
     }
 }

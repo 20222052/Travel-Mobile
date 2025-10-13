@@ -19,8 +19,81 @@ namespace project.Areas.Admin.Controllers
         {
             _context = context;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            // Tổng số đơn hàng
+            var totalOrders = await _context.Order.CountAsync();
+            
+            // Đơn hàng mới (tháng này)
+            var startOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            var newOrders = await _context.Order
+                .Where(o => o.Date >= startOfMonth)
+                .CountAsync();
+            
+            // Tổng số người dùng
+            var totalUsers = await _context.User
+                .Where(u => u.Role == "USER")
+                .CountAsync();
+            
+            // Người dùng mới (tháng này)
+            var newUsers = await _context.User
+                .Where(u => u.Role == "USER" && u.CreatedDate >= startOfMonth)
+                .CountAsync();
+            
+            // Tổng số tour
+            var totalTours = await _context.Tour.CountAsync();
+            
+            // Đơn hàng đang chờ xử lý
+            var pendingOrders = await _context.Order
+                .Where(o => o.Status == 0)
+                .CountAsync();
+            
+            // Đơn hàng hoàn thành (tháng này)
+            var completedOrders = await _context.Order
+                .Where(o => o.Status == 3 && o.Date >= startOfMonth)
+                .CountAsync();
+            
+            // Đơn hàng bị hủy (tháng này)
+            var cancelledOrders = await _context.Order
+                .Where(o => o.Status == 4 && o.Date >= startOfMonth)
+                .CountAsync();
+            
+            // Đơn hàng theo tháng (6 tháng gần nhất)
+            var sixMonthsAgo = DateTime.Now.AddMonths(-6);
+            var ordersPerMonth = await _context.Order
+                .Where(o => o.Date >= sixMonthsAgo)
+                .GroupBy(o => new { o.Date.Value.Year, o.Date.Value.Month })
+                .Select(g => new
+                {
+                    Month = g.Key.Month,
+                    Year = g.Key.Year,
+                    Count = g.Count()
+                })
+                .OrderBy(x => x.Year).ThenBy(x => x.Month)
+                .ToListAsync();
+            
+            // Đơn hàng theo trạng thái
+            var ordersByStatus = await _context.Order
+                .GroupBy(o => o.Status)
+                .Select(g => new
+                {
+                    Status = g.Key,
+                    Count = g.Count()
+                })
+                .ToListAsync();
+            
+            // Gửi dữ liệu sang View
+            ViewBag.TotalOrders = totalOrders;
+            ViewBag.NewOrders = newOrders;
+            ViewBag.TotalUsers = totalUsers;
+            ViewBag.NewUsers = newUsers;
+            ViewBag.TotalTours = totalTours;
+            ViewBag.PendingOrders = pendingOrders;
+            ViewBag.CompletedOrders = completedOrders;
+            ViewBag.CancelledOrders = cancelledOrders;
+            ViewBag.OrdersPerMonth = ordersPerMonth;
+            ViewBag.OrdersByStatus = ordersByStatus;
+            
             return View();
         }  
 

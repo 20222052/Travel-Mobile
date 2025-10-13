@@ -19,11 +19,16 @@ namespace project.Areas.Admin.Controllers
             _context = context;
             _env = env;
         }
-        public async Task<IActionResult> Index(string searchString, int page = 1)
+        public async Task<IActionResult> Index(string searchString, string sortOrder, int page = 1)
         {
             int pageSize = 4;
 
             ViewData["CurrentFilter"] = searchString;
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["LocationSortParm"] = sortOrder == "location" ? "location_desc" : "location";
+            ViewData["PriceSortParm"] = sortOrder == "price" ? "price_desc" : "price";
+            ViewData["DurationSortParm"] = sortOrder == "duration" ? "duration_desc" : "duration";
 
             var Query = _context.Tour
                 .Include(t => t.Category) //Include để có dữ liệu
@@ -34,10 +39,21 @@ namespace project.Areas.Admin.Controllers
                 Query = Query.Where(u => u.Name.Contains(searchString) || u.Location.Contains(searchString));
             }
 
+            Query = sortOrder switch
+            {
+                "name_desc" => Query.OrderByDescending(t => t.Name),
+                "location" => Query.OrderBy(t => t.Location),
+                "location_desc" => Query.OrderByDescending(t => t.Location),
+                "price" => Query.OrderBy(t => t.Price),
+                "price_desc" => Query.OrderByDescending(t => t.Price),
+                "duration" => Query.OrderBy(t => t.Duration),
+                "duration_desc" => Query.OrderByDescending(t => t.Duration),
+                _ => Query.OrderBy(t => t.Name),
+            };
+
             int total = await Query.CountAsync();
 
             var tour = await Query
-                .OrderBy(u => u.Id)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -165,13 +181,41 @@ namespace project.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var tour = await _context.Tour.FindAsync(id);
-            if (tour != null)
+            try
             {
+                var tour = await _context.Tour.FindAsync(id);
+                if (tour == null)
+                {
+                    TempData["ErrorMessage"] = "Không tìm thấy tour cần xóa!";
+                    return RedirectToAction("Index");
+                }
+
                 _context.Tour.Remove(tour);
                 await _context.SaveChangesAsync();
+                
+                TempData["SuccessMessage"] = "Xóa tour thành công!";
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
+            {
+                // Xử lý lỗi khóa ngoại
+                if (ex.InnerException != null && 
+                    (ex.InnerException.Message.Contains("FOREIGN KEY") || 
+                     ex.InnerException.Message.Contains("REFERENCE constraint")))
+                {
+                    TempData["ErrorMessage"] = "Không thể xóa tour này vì đang có đơn đặt hàng liên quan. Vui lòng xóa các đơn hàng trước!";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Có lỗi xảy ra khi xóa tour. Vui lòng thử lại!";
+                }
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Lỗi: {ex.Message}";
+                return RedirectToAction("Index");
+            }
         }
     }
 }

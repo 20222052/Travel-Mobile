@@ -1,0 +1,369 @@
+/* Admin Form Validation Styles */
+
+/* Form Control Validation States */
+.form-control.is-invalid,
+.form-select.is-invalid {
+    border-color: #dc3545;
+    padding-right: calc(1.5em + 0.75rem);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.form-control.is-valid,
+.form-select.is-valid {
+    border-color: #28a745;
+    padding-right: calc(1.5em + 0.75rem);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.form-control.is-valid:focus,
+.form-select.is-valid:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+/* Invalid Feedback Message */
+.invalid-feedback {
+    display: none;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: #dc3545;
+}
+
+.invalid-feedback i {
+    margin-right: 5px;
+}
+
+.was-validated .form-control:invalid ~ .invalid-feedback,
+.was-validated .form-select:invalid ~ .invalid-feedback,
+.form-control.is-invalid ~ .invalid-feedback,
+.form-select.is-invalid ~ .invalid-feedback {
+    display: block;
+}
+
+/* Valid Feedback Message */
+.valid-feedback {
+    display: none;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: #28a745;
+}
+
+.was-validated .form-control:valid ~ .valid-feedback,
+.was-validated .form-select:valid ~ .valid-feedback,
+.form-control.is-valid ~ .valid-feedback,
+.form-select.is-valid ~ .valid-feedback {
+    display: block;
+}
+
+/* Form Group Spacing */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+}
+
+.form-group label .required {
+    color: #dc3545;
+    margin-left: 3px;
+}
+
+/* Required Field Indicator */
+.required-field::after {
+    content: " *";
+    color: #dc3545;
+    font-weight: bold;
+}
+
+/* File Input Validation */
+input[type="file"].is-invalid {
+    border-color: #dc3545;
+}
+
+input[type="file"].is-valid {
+    border-color: #28a745;
+}
+
+/* Image Preview */
+.image-preview {
+    margin-top: 10px;
+    max-width: 200px;
+    max-height: 200px;
+    display: none;
+    border: 2px solid #dee2e6;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+.image-preview.show {
+    display: block;
+}
+
+/* Custom File Upload Button */
+.custom-file-upload {
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.custom-file-upload:hover {
+    background-color: #0056b3;
+}
+
+.custom-file-upload i {
+    margin-right: 5px;
+}
+
+/* Error Summary Box */
+.validation-summary {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+    color: #721c24;
+}
+
+.validation-summary h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.validation-summary ul {
+    margin-bottom: 0;
+    padding-left: 20px;
+}
+
+.validation-summary li {
+    margin-bottom: 5px;
+}
+
+/* Success Summary Box */
+.success-summary {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+    color: #155724;
+}
+
+/* Loading Spinner for Form Submit */
+.form-submitting {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.form-submitting::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30px;
+    height: 30px;
+    margin: -15px 0 0 -15px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Button States */
+.btn-submit {
+    position: relative;
+    min-width: 120px;
+}
+
+.btn-submit:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.btn-submit .spinner {
+    display: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ffffff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.btn-submit.loading .spinner {
+    display: inline-block;
+}
+
+/* Tooltip for validation */
+.validation-tooltip {
+    position: absolute;
+    z-index: 5;
+    display: none;
+    max-width: 200px;
+    padding: 5px 10px;
+    margin-top: 0.1rem;
+    font-size: 0.875rem;
+    color: #fff;
+    background-color: rgba(220, 53, 69, 0.9);
+    border-radius: 0.25rem;
+}
+
+.was-validated .form-control:invalid ~ .validation-tooltip,
+.form-control.is-invalid ~ .validation-tooltip {
+    display: block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .form-group {
+        margin-bottom: 0.75rem;
+    }
+
+    .invalid-feedback,
+    .valid-feedback {
+        font-size: 0.8em;
+    }
+}
+
+/* Form Card Styling */
+.form-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.form-card-header {
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.form-card-header h3 {
+    margin: 0;
+    color: #007bff;
+    font-size: 1.5rem;
+}
+
+/* Input Group with Icon */
+.input-group-with-icon {
+    position: relative;
+}
+
+.input-group-with-icon .form-control {
+    padding-left: 40px;
+}
+
+.input-group-with-icon .input-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    z-index: 10;
+}
+
+.input-group-with-icon .form-control.is-invalid {
+    padding-left: 40px;
+    padding-right: calc(1.5em + 0.75rem);
+}
+
+/* Character Counter */
+.char-counter {
+    font-size: 0.875em;
+    color: #6c757d;
+    text-align: right;
+    margin-top: 5px;
+}
+
+.char-counter.warning {
+    color: #ffc107;
+}
+
+.char-counter.danger {
+    color: #dc3545;
+}
+
+/* Password Strength Indicator */
+.password-strength {
+    height: 5px;
+    margin-top: 5px;
+    border-radius: 3px;
+    background-color: #e9ecef;
+    overflow: hidden;
+}
+
+.password-strength-bar {
+    height: 100%;
+    transition: width 0.3s, background-color 0.3s;
+    width: 0;
+}
+
+.password-strength-bar.weak {
+    width: 33%;
+    background-color: #dc3545;
+}
+
+.password-strength-bar.medium {
+    width: 66%;
+    background-color: #ffc107;
+}
+
+.password-strength-bar.strong {
+    width: 100%;
+    background-color: #28a745;
+}
+
+.password-strength-text {
+    font-size: 0.875em;
+    margin-top: 5px;
+    text-align: right;
+}
+
+/* Checkbox and Radio Validation */
+.form-check-input.is-invalid ~ .form-check-label {
+    color: #dc3545;
+}
+
+.form-check-input.is-valid ~ .form-check-label {
+    color: #28a745;
+}
+
+/* Select2 Integration (if used) */
+.select2-container--default .select2-selection--single.is-invalid {
+    border-color: #dc3545;
+}
+
+.select2-container--default .select2-selection--single.is-valid {
+    border-color: #28a745;
+}

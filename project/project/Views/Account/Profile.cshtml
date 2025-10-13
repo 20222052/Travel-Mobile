@@ -4,6 +4,227 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<style>
+    .profile-container {
+        background: #f8f9fa;
+        padding: 40px 0;
+        min-height: calc(100vh - 200px);
+    }
+    .profile-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        overflow: hidden;
+        margin-top: 0;
+    }
+    .profile-header {
+        background: linear-gradient(131deg, #feb47b 0%, #ff7e5f 100%);
+        padding: 50px 30px;
+        text-align: center;
+        position: relative;
+    }
+    .avatar-wrapper {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 25px;
+    }
+    .avatar-img {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        border: 5px solid white;
+        object-fit: cover;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+    .avatar-badge {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background: #28a745;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 3px solid white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .profile-name {
+        color: white;
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        text-shadow: 0 3px 6px rgba(0,0,0,0.3);
+        letter-spacing: 0.5px;
+    }
+    .profile-username {
+        color: rgba(255,255,255,0.95);
+        font-size: 17px;
+        margin-bottom: 0;
+        font-weight: 500;
+    }
+    .profile-body {
+        padding: 45px 35px;
+    }
+    .info-section {
+        margin-bottom: 35px;
+    }
+    .section-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #0c3e72;
+        margin-bottom: 25px;
+        padding-bottom: 12px;
+        border-bottom: 3px solid #ff7e5f;
+        display: flex;
+        align-items: center;
+    }
+    .section-title i {
+        margin-right: 10px;
+        color: #ff7e5f;
+    }
+    .info-item {
+        display: flex;
+        padding: 18px 20px;
+        margin-bottom: 15px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        transition: all 0.3s;
+        border: 1px solid transparent;
+    }
+    .info-item:hover {
+        background: #fff;
+        transform: translateX(5px);
+        border-color: #ff7e5f;
+        box-shadow: 0 3px 12px rgba(255, 126, 95, 0.15);
+    }
+    .info-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(131deg, #feb47b 0%, #ff7e5f 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 18px;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(255, 126, 95, 0.3);
+    }
+    .info-icon i {
+        color: white;
+        font-size: 22px;
+    }
+    .info-content {
+        flex-grow: 1;
+    }
+    .info-label {
+        font-size: 13px;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+    .info-value {
+        font-size: 17px;
+        color: #2c3e50;
+        font-weight: 600;
+        line-height: 1.4;
+    }
+    .action-buttons {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 2px solid #f0f0f0;
+    }
+    .action-btn {
+        flex: 1;
+        min-width: 180px;
+        padding: 15px 30px;
+        border-radius: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        text-decoration: none;
+        font-size: 14px;
+    }
+    .action-btn i {
+        font-size: 18px;
+    }
+    .btn-edit {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    .btn-edit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        color: white;
+    }
+    .btn-history {
+        background: white;
+        color: #2493e0;
+        border: 2px solid #2493e0;
+    }
+    .btn-history:hover {
+        background: #2493e0;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(36, 147, 224, 0.4);
+    }
+    .btn-logout {
+        background: white;
+        color: #dc3545;
+        border: 3px solid #dc3545;
+    }
+    .btn-logout:hover {
+        background: #dc3545;
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(220, 53, 69, 0.5);
+    }
+    .stats-row {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+    }
+    .stat-card {
+        flex: 1;
+        background: linear-gradient(131deg, #feb47b 0%, #ff7e5f 100%);
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        color: white;
+    }
+    .stat-number {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    .stat-label {
+        font-size: 14px;
+        opacity: 0.9;
+    }
+    @@media (max-width: 768px) {
+        .action-buttons {
+            flex-direction: column;
+        }
+        .action-btn {
+            width: 100%;
+        }
+        .stats-row {
+            flex-direction: column;
+        }
+    }
+</style>
 
 <section class="breadcrumb breadcrumb_bg">
     <div class="container">
@@ -11,27 +232,150 @@
             <div class="col-lg-12">
                 <div class="breadcrumb_iner">
                     <div class="breadcrumb_iner_item text-center">
-                        <h2>profile</h2>
-                        <p>home . profile</p>
+                        <h2>Thông tin cá nhân</h2>
+                        <p>Trang chủ . Hồ sơ</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<div class="container py-5" >
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-body d-flex">
-                    <img src="~/uploads/@Model.Image" class="rounded-circle me-4" width="120" height="120" alt="Avatar" />
-                    <div>
-                        <h4 class="mb-3">@Model.Name</h4>
-                        <p><strong>Giới tính:</strong> @Model.Gender</p>
-                        <p><strong>Email:</strong> @Model.Email</p>
-                        <p><strong>Số điện thoại:</strong> @Model.Phone</p>
-                        <a class="btn btn-outline-primary mt-3" href="@Url.Action("EditProfile", "Account")">Chỉnh sửa</a>
-                        <a class="btn btn-outline-danger mt-3" href="@Url.Action("History", "Account")">Lịch sử</a>
+
+<div class="profile-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="profile-card">
+                    <!-- Profile Header -->
+                    <div class="profile-header">
+                        <div class="avatar-wrapper">
+                            @if (!string.IsNullOrEmpty(Model.Image))
+                            {
+                                <img src="~/uploads/@Model.Image" class="avatar-img" alt="@Model.Name" />
+                            }
+                            else
+                            {
+                                <img src="~/img/default-avatar.png" class="avatar-img" alt="Avatar" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22%23ddd%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2240%22 fill=%22%23999%22%3E@Model.Name?.Substring(0, 1).ToUpper()%3C/text%3E%3C/svg%3E'" />
+                            }
+                            <div class="avatar-badge">
+                                <i class="fas fa-check" style="color: white; font-size: 14px;"></i>
+                            </div>
+                        </div>
+                        <h2 class="profile-name">@Model.Name</h2>
+                        <p class="profile-username">
+                            <i class="fas fa-at"></i> @Model.Username
+                        </p>
+                    </div>
+
+                    <!-- Profile Body -->
+                    <div class="profile-body">
+                        <!-- Personal Information Section -->
+                        <div class="info-section">
+                            <h3 class="section-title">
+                                <i class="fas fa-user"></i>
+                                Thông tin cá nhân
+                            </h3>
+
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="info-content">
+                                    <div class="info-label">Email</div>
+                                    <div class="info-value">@(Model.Email ?? "Chưa cập nhật")</div>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <div class="info-content">
+                                    <div class="info-label">Số điện thoại</div>
+                                    <div class="info-value">@(Model.Phone ?? "Chưa cập nhật")</div>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fas fa-venus-mars"></i>
+                                </div>
+                                <div class="info-content">
+                                    <div class="info-label">Giới tính</div>
+                                    <div class="info-value">@(Model.Gender ?? "Chưa cập nhật")</div>
+                                </div>
+                            </div>
+
+                            @if (Model.DateOfBirth.HasValue)
+                            {
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="fas fa-birthday-cake"></i>
+                                    </div>
+                                    <div class="info-content">
+                                        <div class="info-label">Ngày sinh</div>
+                                        <div class="info-value">@Model.DateOfBirth.Value.ToString("dd/MM/yyyy")</div>
+                                    </div>
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(Model.Address))
+                            {
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </div>
+                                    <div class="info-content">
+                                        <div class="info-label">Địa chỉ</div>
+                                        <div class="info-value">@Model.Address</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Account Information Section -->
+                        <div class="info-section">
+                            <h3 class="section-title">
+                                <i class="fas fa-shield-alt"></i>
+                                Thông tin tài khoản
+                            </h3>
+
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fas fa-user-circle"></i>
+                                </div>
+                                <div class="info-content">
+                                    <div class="info-label">Tên đăng nhập</div>
+                                    <div class="info-value">@Model.Username</div>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="info-content">
+                                    <div class="info-label">Ngày tạo tài khoản</div>
+                                    <div class="info-value">@Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <a href="@Url.Action("EditProfile", "Account")" class="action-btn btn-edit">
+                                <i class="fas fa-edit"></i>
+                                Chỉnh sửa hồ sơ
+                            </a>
+                            <a href="@Url.Action("History", "Account")" class="action-btn btn-history">
+                                <i class="fas fa-history"></i>
+                                Lịch sử đặt tour
+                            </a>
+                            <a href="@Url.Action("Logout", "Account")" class="action-btn btn-logout" onclick="return confirm('Bạn có chắc muốn đăng xuất?')">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Đăng xuất
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

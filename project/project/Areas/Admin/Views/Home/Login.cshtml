@@ -34,6 +34,8 @@
     <link rel="stylesheet" href="~/Admin/plugins/daterangepicker/daterangepicker-bs3.css">
     <!-- bootstrap wysihtml5 - text editor -->
     <link rel="stylesheet" href="~/Admin/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
+    <!-- Form Validation CSS -->
+    <link rel="stylesheet" href="~/css/admin-form-validation.css">
     <style>
         .container {
             width : 500px;
@@ -79,18 +81,42 @@
                         </h4>
                 </div>
                 <div class="card-body">
-                    <form asp-action="Login" method="post">
+                    <form asp-action="Login" method="post" class="needs-validation" novalidate>
                         <div class="form-group">
-                            <label asp-for="Username"></label>
-                            <input asp-for="Username" class="form-control" />
+                            <label asp-for="Username" class="required-field">Tên đăng nhập</label>
+                            <div class="input-group-with-icon">
+                                <i class="fa fa-user input-icon"></i>
+                                <input asp-for="Username" 
+                                       class="form-control" 
+                                       placeholder="Nhập tên đăng nhập"
+                                       required 
+                                       minlength="3"
+                                       maxlength="50" />
+                                <div class="invalid-feedback">
+                                    Vui lòng nhập tên đăng nhập (3-50 ký tự)
+                                </div>
+                            </div>
                             <span asp-validation-for="Username" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label asp-for="Password"></label>
-                            <input asp-for="Password" class="form-control" type="password" />
+                            <label asp-for="Password" class="required-field">Mật khẩu</label>
+                            <div class="input-group-with-icon">
+                                <i class="fa fa-lock input-icon"></i>
+                                <input asp-for="Password" 
+                                       class="form-control" 
+                                       type="password" 
+                                       placeholder="Nhập mật khẩu"
+                                       required 
+                                       minlength="6" />
+                                <div class="invalid-feedback">
+                                    Vui lòng nhập mật khẩu (tối thiểu 6 ký tự)
+                                </div>
+                            </div>
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
-                        <button type="submit" class="btn btn-primary">Đăng nhập</button>
+                        <button type="submit" class="btn btn-primary btn-submit">
+                            <i class="fa fa-sign-in"></i> Đăng nhập
+                        </button>
                     </form>
                     @if (TempData["Error"] != null)
                     {
@@ -101,6 +127,13 @@
         </div>
     </div>
 </div>
+
+<!-- jQuery 2.2.0 -->
+<script src="~/Admin/plugins/jQuery/jQuery-2.2.0.min.js"></script>
+<!-- Bootstrap 3.3.6 -->
+<script src="~/Admin/bootstrap/js/bootstrap.min.js"></script>
+<!-- Form Validation JS -->
+<script src="~/js/admin-form-validation.js"></script>
 
 </body>
 </html>
