@@ -342,6 +342,49 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                     : const Icon(Icons.refresh),
                 label: Text(_resending ? 'Đang gửi...' : 'Không nhận được OTP? Gửi lại'),
               ),
+              const SizedBox(height: 8),
+
+              // Nút quay lại đăng ký
+              TextButton.icon(
+                onPressed: () {
+                  // Hiển thị dialog xác nhận
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      icon: const Icon(Icons.warning_amber, color: Colors.orange, size: 60),
+                      title: const Text('Quay lại đăng ký?'),
+                      content: const Text(
+                        'Bạn có chắc muốn quay lại màn hình đăng ký?\n\n'
+                        'Mã OTP hiện tại sẽ vẫn còn hiệu lực nếu bạn không thay đổi email.',
+                        textAlign: TextAlign.center,
+                      ),
+                      actionsAlignment: MainAxisAlignment.spaceEvenly,
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('Hủy'),
+                        ),
+                        FilledButton.icon(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            context.go('/register');
+                          },
+                          icon: const Icon(Icons.arrow_back),
+                          label: const Text('Quay lại'),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: Colors.orange,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.edit_outlined),
+                label: const Text('Thông tin sai? Quay lại đăng ký'),
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.orange[700],
+                ),
+              ),
               const SizedBox(height: 24),
 
               // Hướng dẫn

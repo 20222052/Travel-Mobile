@@ -32,8 +32,12 @@ class _LoginScreenState extends State<LoginScreen> {
       final User user = await AccountService.login(_uCtrl.text.trim(), _pCtrl.text);
       Session.set(user);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đăng nhập thành công')));
-      context.pop(); // quay lại tab Account (đang mở)
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('✅ Đăng nhập thành công! Chào mừng bạn.'),
+        backgroundColor: Colors.green,
+      ));
+      // Chuyển về trang chủ sau khi đăng nhập thành công
+      context.go('/');
     } catch (e) {
       if (!mounted) return;
       
