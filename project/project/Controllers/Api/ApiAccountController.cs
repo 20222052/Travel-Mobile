@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
@@ -44,8 +43,8 @@ namespace project.Controllers
             // Kiểm tra tài khoản đã xác thực OTP chưa
             if (!user.OtpVerified)
             {
-                return Unauthorized(new 
-                { 
+                return Unauthorized(new
+                {
                     message = "Tài khoản chưa được xác thực. Vui lòng kiểm tra email và xác thực OTP.",
                     email = user.Email,
                     requireOtpVerification = true
@@ -164,16 +163,16 @@ namespace project.Controllers
 
                 if (!otpResult.Success)
                 {
-                    return Ok(new 
-                    { 
+                    return Ok(new
+                    {
                         message = "Đăng ký thành công nhưng không thể gửi OTP. Vui lòng yêu cầu gửi lại OTP.",
                         email = model.Email,
                         otpSent = false
                     });
                 }
 
-                return Ok(new 
-                { 
+                return Ok(new
+                {
                     message = "Đăng ký thành công! Vui lòng kiểm tra email để lấy mã OTP xác thực tài khoản.",
                     email = model.Email,
                     otpSent = true
@@ -181,8 +180,8 @@ namespace project.Controllers
             }
             catch (Exception ex)
             {
-                return Ok(new 
-                { 
+                return Ok(new
+                {
                     message = "Đăng ký thành công nhưng gặp lỗi khi gửi OTP: " + ex.Message,
                     email = model.Email,
                     otpSent = false
@@ -215,8 +214,8 @@ namespace project.Controllers
             user.OtpVerified = true;
             await _context.SaveChangesAsync();
 
-            return Ok(new 
-            { 
+            return Ok(new
+            {
                 message = "Xác thực OTP thành công! Tài khoản đã được kích hoạt.",
                 verified = true
             });
