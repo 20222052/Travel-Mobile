@@ -2,12 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using project.Models;
+using static NuGet.Packaging.PackagingConstants;
 
 namespace project.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableCors("AllowAll")]
+    [EnableCors("AllowOrigin")]
     public class ApiTourController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -16,46 +17,46 @@ namespace project.Controllers.Api
         {
             _context = context;
         }
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Tour>>> GetTours(
-            [FromQuery] string? name,
-            [FromQuery] int? categoryId,
-            [FromQuery] string sort = "desc")
+        public async Task<IActionResult> GetTours(int page = 1, int pageSize = 6, int? categoryId = null, string? name = "", string? sort = "desc")
         {
-            if (_context.Tour == null)
+            IQueryable<Tour> query = _context.Tour;
+            if (!string.IsNullOrEmpty(name))
             {
-                return NotFound();
+                query = query.Where(t => t.Name.Contains(name));
             }
-            
-            var tours = _context.Tour.AsQueryable();
-            
-            // Lọc theo tên
-            if (!string.IsNullOrWhiteSpace(name))
+            if(categoryId != null )
             {
-                tours = tours.Where(p => p.Name.Contains(name));
-            }
-            
-            // Lọc theo danh mục
-            if (categoryId.HasValue)
+                query = query.Where(t => t.CategoryId == categoryId);
+            }    
+            if (sort == "desc")
             {
-                tours = tours.Where(p => p.CategoryId == categoryId.Value);
+                query = query.OrderByDescending(t => t.Id);
             }
-            
-            // Sắp xếp theo ngày tạo
-            if (sort == "asc")
+            else if (sort == "asc")
             {
-                tours = tours.OrderBy(p => p.CreatedDate);
-            }
-            else
+                query = query.OrderBy(t => t.Id);
+            } 
+
+
+            var tours = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+            // Đếm tổng số tour sau khi filter
+            int totalCount = await query.CountAsync();
+            // Tính tổng số trang
+            int totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+            // Trả về JSON gồm danh sách + tổng số trang
+            return Ok(new
             {
-                tours = tours.OrderByDescending(p => p.CreatedDate);
-            }
-            
-            return await tours.ToListAsync();
+                items = tours,
+                totalPages = totalPages,
+                catId = categoryId
+            });
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<Tour>> GetTour(int id)
         {
             if (_context.Tour == null)
@@ -72,7 +73,7 @@ namespace project.Controllers.Api
             return tour;
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> PutProduct(int id, Tour tour)
         {
             if (id != tour.Id)
@@ -128,7 +129,7 @@ namespace project.Controllers.Api
             return Ok(tour);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             if (_context.Tour == null)
@@ -147,6 +148,49 @@ namespace project.Controllers.Api
             return NoContent();
         }
 
+        [HttpGet("random")]
+        public async Task<IActionResult> GetRandomTours()
+        {
+            var randomTours = await _context.Tour
+                .OrderBy(t => Guid.NewGuid())
+                .Include(t => t.Category)
+                .Take(4)
+                .ToListAsync();
+            return Ok(randomTours);
+        }
+
+        [HttpGet("topviewed")]
+        public async Task<IActionResult> GetTopViewedTours()
+        {
+            var topViewedTours = await _context.Tour
+                .OrderByDescending(t => t.View)
+                .Include(t => t.Category)
+                .Take(3)
+                .ToListAsync();
+            return Ok(topViewedTours);
+        }
+
+        [HttpGet("latest")]
+        public async Task<IActionResult> GetLatestTour()
+        {
+            var latestTour = await _context.Tour
+                .OrderByDescending(t => t.CreatedDate)
+                .Include(t => t.Category)
+                .FirstOrDefaultAsync();
+            return Ok(latestTour);
+        }
+
+        [HttpGet("hotel")]
+        public async Task<IActionResult> GetHotelTours()
+        {
+            var hotelTours = await _context.Tour
+                .Include(t => t.Category)
+                .Where(t => t.CategoryId == 5)
+                .OrderByDescending(t => t.CreatedDate)
+                .Take(3)
+                .ToListAsync();
+            return Ok(hotelTours);
+        }
         private bool TourExists(int? id)
         {
             return (_context.Tour?.Any(e => e.Id == id)).GetValueOrDefault();
