@@ -1,0 +1,49 @@
+/* ============================================
+   ADMIN LAYOUT - SIMPLE CUSTOM STYLES
+   ============================================ */
+
+/* Reset */
+* {
+  box-sizing: border-box;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Fix body for admin */
+body.hold-transition {
+  background-color: #ecf0f5;
+}
+
+/* Content wrapper spacing */
+.content-wrapper {
+  margin-top: 50px !important;
+  margin-left: 230px !important;
+  min-height: calc(100vh - 50px) !important;
+  background-color: #ecf0f5 !important;
+  transition: all 0.3s ease !important;
+}
+
+.sidebar-collapse .content-wrapper {
+  margin-left: 50px !important;
+}
+
+/* Footer spacing */
+.main-footer {
+  margin-left: 230px !important;
+  transition: all 0.3s ease !important;
+}
+
+.sidebar-collapse .main-footer {
+  margin-left: 50px !important;
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+  .content-wrapper,
+  .main-footer {
+    margin-left: 0 !important;
+  }
+}
