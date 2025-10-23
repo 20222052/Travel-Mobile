@@ -12,7 +12,79 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.18/css/AdminLTE.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.18/css/skins/_all-skins.min.css">
+    
+      
+
+    <!-- ===== Custom Theme (light & soft) ===== -->
+    <style>
+      :root{
+        --bg: #f5f7fb;
+        --text: #1f2937;
+        --muted: #6b7280;
+        --primary: #2563eb;
+        --primary-weak: #e9efff;
+        --surface-1: #ffffff;
+        --surface-2: #fafafa;
+        --border: #e5e7eb;
+        --radius: 14px;
+        --shadow-1: 0 8px 24px rgba(0,0,0,.08);
+        --shadow-2: 0 6px 18px rgba(0,0,0,.06);
+      }
+      body, .content-wrapper{ background: var(--bg); color: var(--text); }
+      .content-wrapper { padding: 16px 16px 40px; }
+      /* Box (card) mềm & hiện đại hơn */
+      .box{
+        border: 0 !important;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-1);
+        overflow: hidden;
+        background: var(--surface-1);
+      }
+      .box > .box-header{
+        padding: 14px 18px;
+        background: var(--surface-2);
+        border-bottom: 1px solid var(--border);
+      }
+      .box > .box-body{ padding: 18px; }
+      /* Bảng */
+      .table > thead > tr > th{
+        font-weight: 600; color: var(--muted);
+        border-bottom: 1px solid var(--border);
+        background: var(--surface-2);
+      }
+      .table > tbody > tr > td{ vertical-align: middle; }
+      /* SmallBox / InfoBox */
+      .small-box, .info-box{ border-radius: var(--radius); box-shadow: var(--shadow-2); }
+      .small-box .inner h3{ font-weight: 700; }
+      /* Pagination nút gọn */
+      .pagination .btn{ border-radius: 10px; }
+      /* Inputs gọn */
+      .form-control{ border-radius: 10px; border-color: var(--border); }
+      .btn{ border-radius: 10px; }
+      /* Header & sidebar tinh chỉnh chút */
+      .main-header .logo{ background: var(--primary); }
+      .main-header .logo .logo-lg{ font-weight: 700; }
+      .skin-blue .main-header .navbar{ background-color: #1f4fd8; }
+      .sidebar-menu > li.header{ color: var(--muted); }
+      .sidebar-menu>li>a{ border-left: 0; }
+      .sidebar-menu>li.active>a{ background: var(--primary-weak); color:#0b1a53; font-weight:600; }
+      .treeview-menu>li>a{ border-radius: 8px; margin: 2px 8px; }
+      .treeview.menu-open > a { background: var(--primary-weak); }
+      /* ContentHeader spacing */
+      .content-header{ padding: 8px 10px 14px 10px; }
+      .content-header h1 small{ margin-left: 8px; color: var(--muted); font-weight: 500; }
+      /* Image thumb khung đẹp */
+      .thumb{
+        width:96px;height:64px;border-radius:12px;overflow:hidden;
+        background:var(--surface-2);border:1px solid var(--border);
+      }
+      .thumb img{ width:100%;height:100%;object-fit:cover;display:block; }
+      /* Footer nhẹ */
+      .main-footer{ background: var(--surface-2); border-top:1px solid var(--border); }
+    </style>
   </head>
+
+    
   <body class="hold-transition skin-blue sidebar-mini">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
