@@ -223,7 +223,7 @@ const AdminSidebar = () => {
   ];
 
   return (
-    <aside className="main-sidebar">
+    <aside className="main-sidebar" style={{ paddingTop: 0 }}>
       <section className="sidebar">
         <div className="user-panel">
           <div className="pull-left image">
