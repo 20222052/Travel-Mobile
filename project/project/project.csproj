@@ -7,7 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="wwwroot\Admin\.idea\modules.xml" />
+    <Compile Remove="wwwroot\Admin\.idea\**" />
+    <Content Remove="wwwroot\Admin\.idea\**" />
+    <EmbeddedResource Remove="wwwroot\Admin\.idea\**" />
+    <None Remove="wwwroot\Admin\.idea\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,10 +24,6 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
     <PackageReference Include="MimeKit" Version="4.9.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="wwwroot\Admin\.idea\AdminLTE2.iml" />
   </ItemGroup>
 
   <ItemGroup>
