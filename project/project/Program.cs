@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using project.Models;
+using project.OtpConfig;
+using project.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
