@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using project.Models;
+using project.OtpConfig;
+using project.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,7 +77,7 @@ builder.Services.AddAuthentication(options =>
 .AddCookie("AdminScheme", options =>
 {
     options.Cookie.Name = "AdminCookie";
-    // Nếu React admin chạy khác origin → bắt buộc:
+    
     options.Cookie.SameSite = SameSiteMode.None;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 
