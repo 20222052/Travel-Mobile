@@ -8,7 +8,9 @@ class ApiConfig {
   
   // CHẾ ĐỘ EMULATOR (Android Emulator) - Uncomment dòng này nếu dùng Emulator
   static const String baseUrl = 'http://10.0.2.2:5014';
-  
+  // static const String baseUrl = 'http://10.0.2.2:7023';
+  // static const String baseUrl = 'http://192.168.76.1:7023';
+
   // CHẾ ĐỘ ĐIỆN THOẠI THẬT - ✅ Đang dùng IP này
   // IP mới: 192.168.100.117 (Wi-Fi) - Cập nhật ngày 17/10/2025
   // static const String baseUrl ='http://10.142.16.38:5014';
