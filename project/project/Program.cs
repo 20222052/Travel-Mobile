@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-
 using project.Models;
 using project.OtpConfig;
 using project.Services;
@@ -8,44 +7,81 @@ using project.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 
-
 // Add services to the container.
-builder.Services.AddControllersWithViews(); 
+builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//send mail config
-// Đăng ký EmailService
+// MVC + API
+builder.Services.AddControllersWithViews();
+
+// DB
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Email & các service
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddTransient<IEmailService, EmailService>();
-
-// 🔹 Đăng ký OtpService
 builder.Services.AddTransient<IOtpService, OtpService>();
-
-// 🔹 Đăng ký OrderEmailService
 builder.Services.AddTransient<IOrderEmailService, OrderEmailService>();
+
+// CORS: 01 policy duy nhất cho React Admin (Vite: 5173)
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder =>
+    options.AddPolicy("AllowOrigin", cors =>
     {
-        builder
-             .AllowAnyMethod()
-             .AllowAnyHeader()
-             .AllowCredentials();
+        cors.WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
+
+// AUTH
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultScheme = "UserScheme";             // Scheme mặc định nếu không chỉ định
-    options.DefaultChallengeScheme = "UserScheme";    // Khi gặp [Authorize] mà chưa đăng nhập
+    // Giữ mặc định là UserScheme 
+    options.DefaultScheme = "UserScheme";
+    options.DefaultChallengeScheme = "UserScheme";
 })
 .AddCookie("UserScheme", options =>
 {
-//    options.LoginPath = "/Home/Login";
-//    options.AccessDeniedPath = "/Home/Login";
     options.Cookie.Name = "UserCookie";
     options.Cookie.SameSite = SameSiteMode.None;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+
+    options.Events = new CookieAuthenticationEvents
+    {
+        OnRedirectToLogin = context =>
+        {
+            if (context.Request.Path.StartsWithSegments("/api"))
+            {
+                context.Response.StatusCode = 401; // Unauthorized
+                return Task.CompletedTask;
+            }
+            context.Response.Redirect(context.RedirectUri);
+            return Task.CompletedTask;
+        },
+        OnRedirectToAccessDenied = context =>
+        {
+            if (context.Request.Path.StartsWithSegments("/api"))
+            {
+                context.Response.StatusCode = 403; // Forbidden
+                return Task.CompletedTask;
+            }
+            context.Response.Redirect(context.RedirectUri);
+            return Task.CompletedTask;
+        }
+    };
+})
+.AddCookie("AdminScheme", options =>
+{
+    options.Cookie.Name = "AdminCookie";
+    // Nếu React admin chạy khác origin → bắt buộc:
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+
+    // Tránh redirect HTML đối với API
     options.Events = new CookieAuthenticationEvents
     {
         OnRedirectToLogin = context =>
@@ -69,25 +105,14 @@ builder.Services.AddAuthentication(options =>
             return Task.CompletedTask;
         }
     };
-})
-.AddCookie("AdminScheme", options =>
-{
-    options.LoginPath = "/Admin/Home/Login";
-    options.AccessDeniedPath = "/Admin/Login";
-    options.Cookie.Name = "AdminCookie";
 });
-builder.Services.AddCors(options =>
+
+builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("AllowOrigin", builder =>
-    {
-        builder
-            .WithOrigins("http://localhost:5173")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-    });
+    options.AddPolicy("AdminOnly", p => p.RequireRole("ADMIN"));
+    options.AddPolicy("AdminOrEditor", p => p.RequireRole("ADMIN", "EDITOR"));
 });
-builder.Services.AddControllers();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -96,10 +121,12 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+// HTTPS + static
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
 app.UseCors("AllowOrigin");
 
 app.UseAuthentication();
@@ -112,4 +139,7 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
 app.Run();
+
+
