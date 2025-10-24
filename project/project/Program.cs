@@ -24,13 +24,16 @@ builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddTransient<IOtpService, OtpService>();
 builder.Services.AddTransient<IOrderEmailService, OrderEmailService>();
 
-// CORS: 01 policy duy nhất cho React Admin (Vite: 5173)
-
+// CORS: Cho phép React Admin (Vite: 5173) và Mobile App
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowOrigin", cors =>
     {
-        cors.WithOrigins("http://localhost:5173")
+        cors.WithOrigins(
+                "http://localhost:5173",      // React Admin
+                "http://10.0.2.2:5014",       // Android Emulator
+                "http://localhost:5014"       // Local testing
+            )
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -47,8 +50,9 @@ builder.Services.AddAuthentication(options =>
 .AddCookie("UserScheme", options =>
 {
     options.Cookie.Name = "UserCookie";
-    options.Cookie.SameSite = SameSiteMode.None;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    // Cho phép HTTP trong môi trường development (mobile app)
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 
     options.Events = new CookieAuthenticationEvents
     {
@@ -78,8 +82,9 @@ builder.Services.AddAuthentication(options =>
 {
     options.Cookie.Name = "AdminCookie";
     
-    options.Cookie.SameSite = SameSiteMode.None;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    // Cho phép HTTP trong môi trường development (mobile app)
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 
     // Tránh redirect HTML đối với API
     options.Events = new CookieAuthenticationEvents
