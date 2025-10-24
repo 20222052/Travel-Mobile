@@ -16,6 +16,14 @@ import BlogForm from "@pages/Admin/Blog/BlogForm";
 import CategoryList from "@pages/Admin/Category/CategoryList";
 import CategoryForm from "@pages/Admin/Category/CategoryForm";
 
+// Users
+import UserList from "@pages/Admin/User/UserList";
+import UserForm from "@pages/Admin/User/UserForm";
+
+// Tours
+import TourList from "@pages/Admin/Tour/TourList";
+import TourForm from "@pages/Admin/Tour/TourForm";
+
 export default function AppRouter() {
   return (
     <Routes>
@@ -35,6 +43,12 @@ export default function AppRouter() {
         <Route path="category" element={<CategoryList />} />
         <Route path="category/create" element={<CategoryForm />} />
         <Route path="category/edit/:id" element={<CategoryForm />} />
+        <Route path="/admin/users" element={<UserList/>} />
+        <Route path="/admin/users/create" element={<UserForm/>} />
+        <Route path="/admin/users/edit/:id" element={<UserForm/>} />
+        <Route path="/admin/tours" element={<TourList />} />
+        <Route path="/admin/tours/create" element={<TourForm />} />
+        <Route path="/admin/tours/edit/:id" element={<TourForm />} />
       </Route>
 
       {/* 404 */}
