@@ -46,6 +46,17 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _future = TourService.getTours();
+    _loadCartCount();
+  }
+
+  // Load số lượng giỏ hàng khi vào app
+  Future<void> _loadCartCount() async {
+    if (Session.current.value == null) return;
+    try {
+      await CartService.getCart(); // Sẽ tự động cập nhật CartState
+    } catch (e) {
+      // Không làm gì nếu lỗi (user chưa đăng nhập hoặc giỏ hàng rỗng)
+    }
   }
 
   // ---- TOUR reload

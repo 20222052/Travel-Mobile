@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../config/api_config.dart';
+import '../state/cart_state.dart';
 
 class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   final TextEditingController searchCtrl;
@@ -101,10 +102,48 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
 
             const SizedBox(width: 8),
 
-            IconButton(
-              onPressed: onCart,
-              icon: const Icon(Icons.shopping_cart_outlined, size: 26),
-              tooltip: 'Giỏ hàng',
+            // Icon giỏ hàng với badge
+            ListenableBuilder(
+              listenable: CartState(),
+              builder: (context, _) {
+                final count = CartState().itemCount;
+                return Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    IconButton(
+                      onPressed: onCart,
+                      icon: const Icon(Icons.shopping_cart_outlined, size: 26),
+                      tooltip: 'Giỏ hàng',
+                    ),
+                    if (count > 0)
+                      Positioned(
+                        right: 6,
+                        top: 6,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 1.5),
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 18,
+                            minHeight: 18,
+                          ),
+                          child: Text(
+                            count > 99 ? '99+' : '$count',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
             ),
           ],
         ),
