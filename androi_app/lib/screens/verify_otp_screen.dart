@@ -344,6 +344,65 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
               ),
               const SizedBox(height: 8),
 
+              // Divider với text
+              Row(
+                children: [
+                  const Expanded(child: Divider()),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      'hoặc',
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                  ),
+                  const Expanded(child: Divider()),
+                ],
+              ),
+              const SizedBox(height: 8),
+
+              // Nút về màn đăng nhập
+              OutlinedButton.icon(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      icon: const Icon(Icons.login, color: Colors.blue, size: 60),
+                      title: const Text('Về màn đăng nhập?'),
+                      content: const Text(
+                        'Nếu bạn đã có tài khoản và đã xác thực OTP trước đó, '
+                        'bạn có thể đăng nhập ngay bây giờ.\n\n'
+                        'Nếu chưa xác thực, hãy hoàn thành xác thực OTP trước.',
+                        textAlign: TextAlign.center,
+                      ),
+                      actionsAlignment: MainAxisAlignment.spaceEvenly,
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('Hủy'),
+                        ),
+                        FilledButton.icon(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            context.go('/login');
+                          },
+                          icon: const Icon(Icons.login),
+                          label: const Text('Đăng nhập'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.login),
+                label: const Text('Đã có tài khoản? Đăng nhập ngay'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+
               // Nút quay lại đăng ký
               TextButton.icon(
                 onPressed: () {
