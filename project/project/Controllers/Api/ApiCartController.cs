@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using project.Models;
@@ -320,3 +320,4 @@ namespace project.Controllers.Api
         public string Address { get; set; } = string.Empty;
     }
 }
+

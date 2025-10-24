@@ -16,6 +16,9 @@ import BlogForm from "@pages/Admin/Blog/BlogForm";
 import CategoryList from "@pages/Admin/Category/CategoryList";
 import CategoryForm from "@pages/Admin/Category/CategoryForm";
 
+// Order
+import OrderList from "@pages/Admin/order/OrderList";
+
 export default function AppRouter() {
   return (
     <Routes>
@@ -35,6 +38,7 @@ export default function AppRouter() {
         <Route path="category" element={<CategoryList />} />
         <Route path="category/create" element={<CategoryForm />} />
         <Route path="category/edit/:id" element={<CategoryForm />} />
+        <Route path="order" element={<OrderList />} />
       </Route>
 
       {/* 404 */}

@@ -1,0 +1,492 @@
+{
+	"info": {
+		"_postman_id": "travel-api-collection",
+		"name": "Travel Mobile API - Dashboard & Orders",
+		"description": "Complete API collection for Travel Mobile App - Dashboard Admin & Order Management",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.token) {",
+									"    pm.environment.set(\"token\", jsonData.token);",
+									"    console.log(\"Token saved: \" + jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"admin\",\n  \"password\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ApiAccountAdmin/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ApiAccountAdmin", "login"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Dashboard Admin",
+			"item": [
+				{
+					"name": "Get Dashboard Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/ApiDashboardAdmin/statistics",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ApiDashboardAdmin", "statistics"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Orders Per Month",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/ApiDashboardAdmin/orders-per-month?months=6",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ApiDashboardAdmin", "orders-per-month"],
+							"query": [
+								{
+									"key": "months",
+									"value": "6"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Orders By Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/ApiDashboardAdmin/orders-by-status",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ApiDashboardAdmin", "orders-by-status"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Revenue Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/ApiDashboardAdmin/revenue-statistics",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ApiDashboardAdmin", "revenue-statistics"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Revenue Per Month",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/ApiDashboardAdmin/revenue-per-month?months=12",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ApiDashboardAdmin", "revenue-per-month"],
+							"query": [
+								{
+									"key": "months",
+									"value": "12"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Top Tours",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/ApiDashboardAdmin/top-tours?limit=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ApiDashboardAdmin", "top-tours"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Recent Orders",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/ApiDashboardAdmin/recent-orders?limit=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ApiDashboardAdmin", "recent-orders"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Recent Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/ApiDashboardAdmin/recent-users?limit=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ApiDashboardAdmin", "recent-users"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Dashboard Overview (All in One)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/ApiDashboardAdmin/overview",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ApiDashboardAdmin", "overview"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Order Management",
+			"item": [
+				{
+					"name": "Get Orders By User ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ApiOrder?id=1&search=&sort=desc",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ApiOrder"],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								},
+								{
+									"key": "search",
+									"value": ""
+								},
+								{
+									"key": "sort",
+									"value": "desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Order Details By Order ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ApiOrder/orderDetail/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ApiOrder", "orderDetail", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Orders (Admin - Pagination)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/ApiOrder/all?searchString=&sortOrder=date_desc&page=1&pageSize=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ApiOrder", "all"],
+							"query": [
+								{
+									"key": "searchString",
+									"value": ""
+								},
+								{
+									"key": "sortOrder",
+									"value": "date_desc",
+									"description": "Options: name_desc, date, date_desc, status, status_desc"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Order Detail (Full Info)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ApiOrder/detail/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ApiOrder", "detail", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Order (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Nguyễn Văn A\",\n  \"email\": \"test@email.com\",\n  \"phone\": \"0123456789\",\n  \"address\": \"Hà Nội, Việt Nam\",\n  \"date\": \"2025-10-24T10:00:00\",\n  \"status\": 0,\n  \"totalPrice\": 5000000,\n  \"userId\": 1,\n  \"tourId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ApiOrder/create",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ApiOrder", "create"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Order (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"name\": \"Nguyễn Văn A Updated\",\n  \"email\": \"updated@email.com\",\n  \"phone\": \"0987654321\",\n  \"address\": \"Hồ Chí Minh, Việt Nam\",\n  \"date\": \"2025-10-24T10:00:00\",\n  \"status\": 1,\n  \"totalPrice\": 5500000,\n  \"userId\": 1,\n  \"tourId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ApiOrder/update/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ApiOrder", "update", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Order Status (Send Email)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": 3\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ApiOrder/update-status/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ApiOrder", "update-status", "1"]
+						},
+						"description": "Status values:\n- 0: Chờ xác nhận\n- 1: Đã xác nhận\n- 2: Đang giao\n- 3: Đã giao\n- 4: Đã hủy"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Order (Admin)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/ApiOrder/delete/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ApiOrder", "delete", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Order Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/ApiOrder/statistics",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ApiOrder", "statistics"]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://localhost:7078",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
