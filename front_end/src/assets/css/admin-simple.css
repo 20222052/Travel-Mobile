@@ -19,7 +19,7 @@ body.hold-transition {
 
 /* Content wrapper spacing */
 .content-wrapper {
-  margin-top: 50px !important;
+  
   margin-left: 230px !important;
   min-height: calc(100vh - 50px) !important;
   background-color: #ecf0f5 !important;
