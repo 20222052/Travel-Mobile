@@ -94,6 +94,10 @@ class AccountService {
   }
 
   static Future<User> login(String username, String password) async {
+    print('=== LOGIN REQUEST ===');
+    print('URL: ${_api.uri('/api/ApiAccount/login')}');
+    print('Username: $username');
+    
     final res = await _api.client
         .post(
       _api.uri('/api/ApiAccount/login'),
@@ -101,6 +105,10 @@ class AccountService {
       body: jsonEncode({'username': username, 'password': password}),
     )
         .timeout(_timeout);
+
+    print('Response Status: ${res.statusCode}');
+    print('Response Headers: ${res.headers}');
+    print('Response Body: ${utf8.decode(res.bodyBytes)}');
 
     // LƯU COOKIE cho các request kế tiếp
     _api.saveCookieFromResponseHeaders(res.headers);

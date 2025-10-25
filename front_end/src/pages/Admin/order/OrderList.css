@@ -1,0 +1,167 @@
+/* OrderList.css - Styles for Order Management Page */
+
+.search-form {
+  margin-bottom: 15px;
+}
+
+.table-header {
+  background: linear-gradient(to right, #3c8dbc, #357ca5);
+  color: white;
+  padding: 15px;
+  margin: -1px -1px 0 -1px;
+  border-radius: 3px 3px 0 0;
+}
+
+.table-header h4 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.orders-table {
+  margin-top: 0;
+}
+
+.orders-table thead {
+  background-color: #f4f4f4;
+}
+
+.orders-table thead th {
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #ddd;
+  padding: 12px 8px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.orders-table tbody td {
+  padding: 10px 8px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.orders-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.order-link {
+  color: #3c8dbc;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.order-link:hover {
+  color: #357ca5;
+  text-decoration: underline;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-pending {
+  background-color: #f39c12;
+  color: white;
+}
+
+.status-confirmed {
+  background-color: #5bc0de;
+  color: white;
+}
+
+.status-delivered {
+  background-color: #00a65a;
+  color: white;
+}
+
+.status-success {
+  background-color: #28a745;
+  color: white;
+}
+
+.status-cancelled {
+  background-color: #dd4b39;
+  color: white;
+}
+
+/* Action Buttons */
+.action-buttons {
+  white-space: nowrap;
+}
+
+.action-buttons .btn {
+  margin: 2px;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.action-buttons .btn i {
+  margin-right: 3px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .search-form .form-group {
+    margin-bottom: 10px;
+  }
+
+  .search-form input,
+  .search-form select {
+    width: 100% !important;
+  }
+
+  .table-responsive {
+    border: 1px solid #ddd;
+  }
+
+  .orders-table {
+    font-size: 12px;
+  }
+
+  .orders-table thead th,
+  .orders-table tbody td {
+    padding: 8px 4px;
+  }
+
+  .action-buttons .btn {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+}
+
+/* Loading and Empty State */
+.text-center {
+  text-align: center;
+  padding: 30px;
+  color: #999;
+  font-size: 14px;
+}
+
+/* Pagination */
+.pagination {
+  margin: 10px 0;
+}
+
+.pagination > li > a {
+  color: #3c8dbc;
+}
+
+.pagination > .active > a,
+.pagination > .active > a:hover,
+.pagination > .active > a:focus {
+  background-color: #3c8dbc;
+  border-color: #3c8dbc;
+}
+
+.pagination > .disabled > a {
+  color: #ccc;
+  cursor: not-allowed;
+}

@@ -24,6 +24,10 @@ import UserForm from "@pages/Admin/User/UserForm";
 import TourList from "@pages/Admin/Tour/TourList";
 import TourForm from "@pages/Admin/Tour/TourForm";
 
+// Order
+import OrderList from "@pages/Admin/order/OrderList";
+
+
 export default function AppRouter() {
   return (
     <Routes>
@@ -49,6 +53,7 @@ export default function AppRouter() {
         <Route path="/admin/tours" element={<TourList />} />
         <Route path="/admin/tours/create" element={<TourForm />} />
         <Route path="/admin/tours/edit/:id" element={<TourForm />} />
+        <Route path="order" element={<OrderList />} />
       </Route>
 
       {/* 404 */}

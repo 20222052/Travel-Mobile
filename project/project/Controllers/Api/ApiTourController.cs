@@ -17,6 +17,8 @@ namespace project.Controllers.Api
         {
             _context = context;
         }
+
+        [HttpGet]
         public async Task<IActionResult> GetTours(int page = 1, int pageSize = 6, int? categoryId = null, string? name = "", string? sort = "desc")
         {
             IQueryable<Tour> query = _context.Tour;
@@ -103,7 +105,7 @@ namespace project.Controllers.Api
         }
 
         [HttpPost]
-        public async Task<ActionResult<Tour>> PostProduct(Tour tour)
+        public async Task<ActionResult<Tour>> PostTour(Tour tour)
         {
             if (_context.Tour == null)
             {
@@ -130,7 +132,7 @@ namespace project.Controllers.Api
         }
 
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> DeleteProduct(int id)
+        public async Task<IActionResult> DeleteTour(int id)
         {
             if (_context.Tour == null)
             {

@@ -3,10 +3,12 @@ import 'package:http/http.dart' as http;
 
 import 'api_client.dart';
 import '../models/cart_item.dart';
+import '../state/cart_state.dart';
 
 class CartService {
   static final _api = ApiClient.instance;
   static const _timeout = Duration(seconds: 20);
+  static final _cartState = CartState();
 
   static Exception _ex(http.Response res) {
     final body = utf8.decode(res.bodyBytes);
@@ -28,7 +30,11 @@ class CartService {
 
     final data = jsonDecode(utf8.decode(res.bodyBytes));
     if (data is List) {
-      return data.map((e) => CartItemModel.fromJson(e as Map<String, dynamic>)).toList();
+      final items = data.map((e) => CartItemModel.fromJson(e as Map<String, dynamic>)).toList();
+      // Cập nhật tổng số lượng sản phẩm (sum của quantity)
+      final totalQuantity = items.fold<int>(0, (sum, item) => sum + item.quantity);
+      _cartState.updateCount(totalQuantity);
+      return items;
     }
     throw Exception('Định dạng JSON không đúng (expected List)');
   }
@@ -43,6 +49,11 @@ class CartService {
     )
         .timeout(_timeout);
     if (res.statusCode != 200) throw _ex(res);
+    
+    // Tăng số lượng trong state theo số lượng thêm vào
+    for (int i = 0; i < quantity; i++) {
+      _cartState.increment();
+    }
   }
 
   /// PUT /api/ApiCart/{id}  body: {quantity}
@@ -55,6 +66,9 @@ class CartService {
     )
         .timeout(_timeout);
     if (res.statusCode != 200) throw _ex(res);
+    
+    // Sau khi update quantity, reload lại giỏ hàng để cập nhật tổng số lượng chính xác
+    await getCart();
   }
 
   /// DELETE /api/ApiCart/{id}
@@ -63,6 +77,9 @@ class CartService {
         .delete(_api.uri('/api/ApiCart/$cartItemId'), headers: _api.authJsonHeaders())
         .timeout(_timeout);
     if (res.statusCode != 200) throw _ex(res);
+    
+    // Sau khi xóa, reload lại giỏ hàng để cập nhật tổng số lượng chính xác
+    await getCart();
   }
 
   /// POST /api/ApiCart/checkout  body: {name, phone, address}
@@ -78,6 +95,10 @@ class CartService {
 
     final map = jsonDecode(utf8.decode(res.bodyBytes)) as Map<String, dynamic>;
     final id = map['orderId'] ?? map['OrderId'] ?? map['id'] ?? map['Id'];
+    
+    // Reset giỏ hàng sau khi checkout
+    _cartState.reset();
+    
     return (id as num).toInt();
   }
 }

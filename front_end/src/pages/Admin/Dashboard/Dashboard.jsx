@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import ContentHeader from '@/components/admin/ContentHeader';
 import { Box, SmallBox, InfoBox, LoadingSpinner } from '@/components/admin/AdminComponents';
 import { usePageTitle } from '@/hooks/useAdminHooks';
+import dashboardService from '@/services/dashboardService';
 
 const AdminDashboard = () => {
   usePageTitle('Dashboard');
@@ -21,6 +22,7 @@ const AdminDashboard = () => {
   });
   
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchDashboardStats();
@@ -29,28 +31,32 @@ const AdminDashboard = () => {
   const fetchDashboardStats = async () => {
     try {
       setLoading(true);
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/admin/dashboard/stats');
-      // const data = await response.json();
+      setError(null);
       
-      // Mock data
-      setTimeout(() => {
-        setStats({
-          totalOrders: 150,
-          newOrders: 23,
-          totalUsers: 450,
-          newUsers: 15,
-          totalTours: 45,
-          pendingOrders: 8,
-          completedOrders: 120,
-          cancelledOrders: 5,
-          totalRevenue: 150000000,
-          monthRevenue: 25000000
-        });
-        setLoading(false);
-      }, 500);
+      // Gọi API lấy thống kê chính
+      const statisticsData = await dashboardService.getStatistics();
+      
+      // Gọi API lấy thống kê doanh thu
+      const revenueData = await dashboardService.getRevenueStatistics();
+      
+      // Map dữ liệu từ API vào state
+      setStats({
+        totalOrders: statisticsData.totalOrders || 0,
+        newOrders: statisticsData.newOrders || 0,
+        totalUsers: statisticsData.totalUsers || 0,
+        newUsers: statisticsData.newUsers || 0,
+        totalTours: statisticsData.totalTours || 0,
+        pendingOrders: statisticsData.pendingOrders || 0,
+        completedOrders: statisticsData.completedOrders || 0,
+        cancelledOrders: statisticsData.cancelledOrders || 0,
+        totalRevenue: revenueData.totalRevenue || 0,
+        monthRevenue: revenueData.monthlyRevenue || 0
+      });
+      
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
+      setError('Không thể tải dữ liệu dashboard. Vui lòng thử lại sau.');
       setLoading(false);
     }
   };
@@ -77,6 +83,31 @@ const AdminDashboard = () => {
         />
         <section className="content">
           <LoadingSpinner size="lg" text="Loading dashboard data..." />
+        </section>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <ContentHeader 
+          title="Dashboard" 
+          subtitle="Control panel" 
+          breadcrumbs={breadcrumbs}
+        />
+        <section className="content">
+          <div className="alert alert-danger">
+            <h4><i className="icon fa fa-ban"></i> Lỗi!</h4>
+            {error}
+            <button 
+              className="btn btn-default btn-sm" 
+              onClick={fetchDashboardStats}
+              style={{ marginLeft: '10px' }}
+            >
+              <i className="fa fa-refresh"></i> Thử lại
+            </button>
+          </div>
         </section>
       </>
     );
@@ -121,7 +152,7 @@ const AdminDashboard = () => {
               value={stats.totalUsers}
               icon="ion-person-add"
               color="yellow"
-              link="/admin/user"
+              link="/admin/dashboard"
               linkText="Xem chi tiết"
             />
           </div>
@@ -212,8 +243,8 @@ const AdminDashboard = () => {
             <Box title="Quick Actions" type="info">
               <div className="row">
                 <div className="col-xs-6 mb-2">
-                  <Link to="/admin/tour/create" className="btn btn-primary btn-block">
-                    <i className="fa fa-plus"></i> Thêm Tour
+                  <Link to="/admin/blog/create" className="btn btn-primary btn-block">
+                    <i className="fa fa-plus"></i> Thêm Blog
                   </Link>
                 </div>
                 <div className="col-xs-6 mb-2">
@@ -224,13 +255,13 @@ const AdminDashboard = () => {
               </div>
               <div className="row" style={{ marginTop: '10px' }}>
                 <div className="col-xs-6">
-                  <Link to="/admin/user/create" className="btn btn-warning btn-block">
-                    <i className="fa fa-user-plus"></i> Thêm User
+                  <Link to="/admin/category" className="btn btn-warning btn-block">
+                    <i className="fa fa-tags"></i> Quản lý Category
                   </Link>
                 </div>
                 <div className="col-xs-6">
                   <Link to="/admin/category/create" className="btn btn-info btn-block">
-                    <i className="fa fa-tags"></i> Thêm Category
+                    <i className="fa fa-plus"></i> Thêm Category
                   </Link>
                 </div>
               </div>
